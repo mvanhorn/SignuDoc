@@ -1,0 +1,944 @@
+# Copy to new draft — live demo against local Postgres
+# 2026-11-14T01:18:28Z
+# APP_URL=http://127.0.0.1:3000
+# EMAIL_DRIVER=capture STORAGE_DRIVER=local
+
+$ curl -sS -o /dev/null -w icon.svg HTTP %{http_code}\n http://127.0.0.1:3000/icon.svg
+icon.svg HTTP 200
+exit=0
+
+$ node /workspace/.data/demo/run-demo.mjs
+Ready at http://127.0.0.1:3000
+
+# 1. First-run setup
+$ POST http://127.0.0.1:3000/api/setup  # setup
+HTTP 201
+{
+  "redirectTo": "/settings#organization"
+}
+exit=0
+
+# 2. Sign in as owner
+$ POST http://127.0.0.1:3000/api/auth/sign-in/email  # owner sign-in
+HTTP 200
+{
+  "redirect": false,
+  "token": "ZruXp3UGrcRaZ1JGmgiLrgnZ6UeXALNx",
+  "user": {
+    "name": "Matt Van Horn",
+    "email": "matt@harbour.example",
+    "emailVerified": true,
+    "image": null,
+    "createdAt": "2026-11-14T01:18:28.948Z",
+    "updatedAt": "2026-11-14T01:18:28.866Z",
+    "id": "i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt"
+  }
+}
+exit=0
+
+# 3. Create draft envelope (multipart PDF)
+$ POST http://127.0.0.1:3000/api/envelopes  # create envelope
+HTTP 201
+{
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "pageCount": 2,
+  "redirectPath": "/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/signers",
+  "sourcePdfFilename": "lease-renewal.pdf",
+  "sourcePdfSizeBytes": 1188,
+  "title": "Lease renewal — copy-to-draft demo"
+}
+exit=0
+
+# 4. Add two signers, one copy recipient, emailed-code on first signer
+$ PUT http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/signers  # replace signers
+HTTP 200
+{
+  "copyRecipients": [
+    {
+      "email": "casey.copy@example.test",
+      "id": "bdc473f0-3586-4462-8948-9290214a10b8",
+      "name": "Casey Copy"
+    }
+  ],
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "redirectPath": "/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/prepare",
+  "signers": [
+    {
+      "email": "riley@example.test",
+      "id": "312fb367-ba64-4763-815f-912b745aea35",
+      "hasAccessCode": false,
+      "name": "Riley Recipient",
+      "requireEmailCode": false,
+      "signatureMeaning": null,
+      "signOrder": 1
+    },
+    {
+      "email": "alex@example.test",
+      "id": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+      "hasAccessCode": false,
+      "name": "Alex Second",
+      "requireEmailCode": false,
+      "signatureMeaning": null,
+      "signOrder": 2
+    }
+  ],
+  "updatedAt": 1794619110
+}
+exit=0
+
+# 5. Place fields
+$ PUT http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/fields  # replace fields
+HTTP 200
+{
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "fields": [
+    {
+      "id": "67d2f111-9703-488f-8856-7c4cb2bb7c29",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "signerId": "312fb367-ba64-4763-815f-912b745aea35",
+      "type": "signature",
+      "page": 1,
+      "x": 0.12,
+      "y": 0.72,
+      "width": 0.3,
+      "height": 0.08,
+      "required": true,
+      "label": "Signature"
+    },
+    {
+      "id": "9cb3a9a4-8a17-4066-b0a0-38dce8d201de",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "signerId": "312fb367-ba64-4763-815f-912b745aea35",
+      "type": "text",
+      "page": 1,
+      "x": 0.12,
+      "y": 0.62,
+      "width": 0.28,
+      "height": 0.04,
+      "required": true,
+      "label": "Printed name"
+    },
+    {
+      "id": "3c45df9c-d21a-4470-b9f0-ff1db16c9118",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "signerId": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+      "type": "signature",
+      "page": 2,
+      "x": 0.12,
+      "y": 0.72,
+      "width": 0.3,
+      "height": 0.08,
+      "required": true,
+      "label": "Signature"
+    },
+    {
+      "id": "07217646-2153-42d4-8156-f7df72f8c12c",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "signerId": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+      "type": "dropdown",
+      "page": 2,
+      "x": 0.12,
+      "y": 0.62,
+      "width": 0.22,
+      "height": 0.04,
+      "required": true,
+      "label": "Term",
+      "options": [
+        "Yearly",
+        "Monthly"
+      ]
+    }
+  ],
+  "redirectPath": "/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/review",
+  "updatedAt": 1794619111
+}
+exit=0
+
+# 6. Send envelope
+$ POST http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/send  # send
+HTTP 200
+{
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "expiresAt": 1795223912,
+  "notifiedSignerName": "Riley Recipient",
+  "redirectPath": "/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "sentAt": 1794619112
+}
+exit=0
+
+# 7. Both signers complete the envelope
+# Signing as Riley Recipient token=6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc
+$ GET http://127.0.0.1:3000/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc  # signing payload riley@example.test
+HTTP 200
+{
+  "consentUrl": "/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/consent",
+  "consentedAt": null,
+  "currentSignerFields": [
+    {
+      "height": 0.08,
+      "id": "67d2f111-9703-488f-8856-7c4cb2bb7c29",
+      "label": "Signature",
+      "page": 1,
+      "required": true,
+      "signerId": "312fb367-ba64-4763-815f-912b745aea35",
+      "type": "signature",
+      "width": 0.3,
+      "x": 0.12,
+      "y": 0.72,
+      "signerName": "Riley Recipient"
+    },
+    {
+      "height": 0.04,
+      "id": "9cb3a9a4-8a17-4066-b0a0-38dce8d201de",
+      "label": "Printed name",
+      "page": 1,
+      "required": true,
+      "signerId": "312fb367-ba64-4763-815f-912b745aea35",
+      "type": "text",
+      "width": 0.28,
+      "x": 0.12,
+      "y": 0.62,
+      "signerName": "Riley Recipient"
+    }
+  ],
+  "disclosure": {
+    "sections": [
+      {
+        "heading": "Using electronic records and signatures",
+        "text": "Matt Van Horn asks you to receive this document and sign it electronically instead of on paper. If you agree, your electronic signature has the same effect as a handwritten one, and the documents you receive this way count as delivered to you in writing."
+      },
+      {
+        "heading": "You can choose paper instead",
+        "text": "You do not have to agree. To sign on paper instead, or to ask for a paper copy of any document after signing, contact Matt Van Horn at help@harbour.example. A paper copy is free unless Matt Van Horn tells you otherwise before you ask."
+      },
+      {
+        "heading": "Withdrawing your agreement",
+        "text": "You can withdraw this agreement at any time before you sign by declining or by telling Matt Van Horn at help@harbour.example. Withdrawing does not undo a signature you already gave."
+      },
+      {
+        "heading": "What you need",
+        "text": "A current web browser and a device that can open and save PDF files. You will receive the signed document by email, so keep your email address up to date with the sender. Download and keep the signed copy: it is your record."
+      },
+      {
+        "heading": "This agreement covers",
+        "text": "This document and the notices about it that are sent to you through this site."
+      }
+    ],
+    "statement": "I have read the disclosure above, I can open and save PDF files on this device, and I agree to use electronic records and signatures for this document.",
+    "version": "2026-11-13"
+  },
+  "declineUrl": "/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/decline",
+  "documentUrl": "/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/document",
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "envelopeTitle": "Lease renewal — copy-to-draft demo",
+  "pageCount": 2,
+  "pages": [
+    {
+      "id": "7567f7df-222d-419c-b546-72774cfa6d23",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "pageNumber": 1,
+      "widthPt": 612,
+      "heightPt": 792
+    },
+    {
+      "id": "69b09fac-7d22-4f71-8cfc-da16c90fde7e",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "pageNumber": 2,
+      "widthPt": 612,
+      "heightPt": 792
+    }
+  ],
+  "part11": null,
+  "senderName": "Matt Van Horn",
+  "signer": {
+    "email": "riley@example.test",
+    "id": "312fb367-ba64-4763-815f-912b745aea35",
+    "name": "Riley Recipient",
+    "order": 1
+  },
+  "state": "ready",
+  "submitUrl": "/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/submit",
+  "visibleFields": []
+}
+exit=0
+
+$ POST http://127.0.0.1:3000/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/consent  # consent riley@example.test
+HTTP 200
+{
+  "consentedAt": 1794619113
+}
+exit=0
+
+$ POST http://127.0.0.1:3000/api/signing/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/submit  # submit riley@example.test
+HTTP 200
+{
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "redirectPath": "/sign/6OEB5DzgOnZzHzefR0f85K9A6YkRsrE9GPDM7AKUHQc/done?title=Lease+renewal+%E2%80%94+copy-to-draft+demo",
+  "submittedAt": 1794619114
+}
+exit=0
+
+# Signing as Alex Second token=vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U
+$ GET http://127.0.0.1:3000/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U  # signing payload alex@example.test
+HTTP 200
+{
+  "consentUrl": "/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/consent",
+  "consentedAt": null,
+  "currentSignerFields": [
+    {
+      "height": 0.08,
+      "id": "3c45df9c-d21a-4470-b9f0-ff1db16c9118",
+      "label": "Signature",
+      "page": 2,
+      "required": true,
+      "signerId": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+      "type": "signature",
+      "width": 0.3,
+      "x": 0.12,
+      "y": 0.72,
+      "signerName": "Alex Second"
+    },
+    {
+      "height": 0.04,
+      "id": "07217646-2153-42d4-8156-f7df72f8c12c",
+      "label": "Term",
+      "options": [
+        "Yearly",
+        "Monthly"
+      ],
+      "page": 2,
+      "required": true,
+      "signerId": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+      "type": "dropdown",
+      "width": 0.22,
+      "x": 0.12,
+      "y": 0.62,
+      "signerName": "Alex Second"
+    }
+  ],
+  "disclosure": {
+    "sections": [
+      {
+        "heading": "Using electronic records and signatures",
+        "text": "Matt Van Horn asks you to receive this document and sign it electronically instead of on paper. If you agree, your electronic signature has the same effect as a handwritten one, and the documents you receive this way count as delivered to you in writing."
+      },
+      {
+        "heading": "You can choose paper instead",
+        "text": "You do not have to agree. To sign on paper instead, or to ask for a paper copy of any document after signing, contact Matt Van Horn at help@harbour.example. A paper copy is free unless Matt Van Horn tells you otherwise before you ask."
+      },
+      {
+        "heading": "Withdrawing your agreement",
+        "text": "You can withdraw this agreement at any time before you sign by declining or by telling Matt Van Horn at help@harbour.example. Withdrawing does not undo a signature you already gave."
+      },
+      {
+        "heading": "What you need",
+        "text": "A current web browser and a device that can open and save PDF files. You will receive the signed document by email, so keep your email address up to date with the sender. Download and keep the signed copy: it is your record."
+      },
+      {
+        "heading": "This agreement covers",
+        "text": "This document and the notices about it that are sent to you through this site."
+      }
+    ],
+    "statement": "I have read the disclosure above, I can open and save PDF files on this device, and I agree to use electronic records and signatures for this document.",
+    "version": "2026-11-13"
+  },
+  "declineUrl": "/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/decline",
+  "documentUrl": "/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/document",
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "envelopeTitle": "Lease renewal — copy-to-draft demo",
+  "pageCount": 2,
+  "pages": [
+    {
+      "id": "7567f7df-222d-419c-b546-72774cfa6d23",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "pageNumber": 1,
+      "widthPt": 612,
+      "heightPt": 792
+    },
+    {
+      "id": "69b09fac-7d22-4f71-8cfc-da16c90fde7e",
+      "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+      "pageNumber": 2,
+      "widthPt": 612,
+      "heightPt": 792
+    }
+  ],
+  "part11": null,
+  "senderName": "Matt Van Horn",
+  "signer": {
+    "email": "alex@example.test",
+    "id": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+    "name": "Alex Second",
+    "order": 2
+  },
+  "state": "ready",
+  "submitUrl": "/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/submit",
+  "visibleFields": [
+    {
+      "height": 0.08,
+      "id": "67d2f111-9703-488f-8856-7c4cb2bb7c29",
+      "label": "Signature",
+      "page": 1,
+      "required": true,
+      "signerId": "312fb367-ba64-4763-815f-912b745aea35",
+      "type": "signature",
+      "width": 0.3,
+      "x": 0.12,
+      "y": 0.72,
+      "checked": null,
+      "imageDataUrl": null,
+      "inputMethod": "typed",
+      "signerName": "Riley Recipient",
+      "submittedAt": 1794619114,
+      "value": "Riley Recipient"
+    },
+    {
+      "height": 0.04,
+      "id": "9cb3a9a4-8a17-4066-b0a0-38dce8d201de",
+      "label": "Printed name",
+      "page": 1,
+      "required": true,
+      "signerId": "312fb367-ba64-4763-815f-912b745aea35",
+      "type": "text",
+      "width": 0.28,
+      "x": 0.12,
+      "y": 0.62,
+      "checked": null,
+      "imageDataUrl": null,
+      "inputMethod": null,
+      "signerName": "Riley Recipient",
+      "submittedAt": 1794619114,
+      "value": "Riley Recipient"
+    }
+  ]
+}
+exit=0
+
+$ POST http://127.0.0.1:3000/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/consent  # consent alex@example.test
+HTTP 200
+{
+  "consentedAt": 1794619114
+}
+exit=0
+
+$ POST http://127.0.0.1:3000/api/signing/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/submit  # submit alex@example.test
+HTTP 200
+{
+  "envelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+  "redirectPath": "/sign/vS7Q82tVpzuadoFbuFWzdykB48m4sFoAO33UQ1iru7U/done?title=Lease+renewal+%E2%80%94+copy-to-draft+demo",
+  "submittedAt": 1794619114
+}
+exit=0
+
+Original envelope ee2e4270-b3fd-4850-8697-05f0de589c90 status=completed
+
+# 8. POST /api/envelopes/:id/copy as owner (curl)
+$ curl -sS -D - -o copy-response.json -X POST -H Origin: http://127.0.0.1:3000 -H Cookie: <owner-session> http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/copy
+HTTP/1.1 201 Created
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:18:35 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+exit=0
+{"id":"db699bf5-6a9b-4196-81d6-17a059390948"}
+
+# 9. Draft vs original dumps
+{
+  "copyResponse": {
+    "id": "db699bf5-6a9b-4196-81d6-17a059390948"
+  },
+  "draft": {
+    "id": "db699bf5-6a9b-4196-81d6-17a059390948",
+    "status": "draft",
+    "title": "Lease renewal — copy-to-draft demo",
+    "source_pdf_key": "users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/db699bf5-6a9b-4196-81d6-17a059390948/original.pdf",
+    "source_pdf_hash": "89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41",
+    "page_count": 2,
+    "expires_at": null,
+    "reminder_interval_days": null,
+    "part11": false,
+    "signed_pdf_key": null,
+    "evidence_key": null,
+    "fields": [
+      {
+        "id": "9f7c82de-e457-40eb-bd52-4a6d7cb14e30",
+        "signer_id": "58f4e4f4-ff6d-410e-b43a-bab978fc58ee",
+        "type": "text",
+        "page": 1,
+        "x": 0.12,
+        "y": 0.62,
+        "width": 0.28,
+        "height": 0.04,
+        "required": true,
+        "label": "Printed name",
+        "options": null,
+        "group_id": null,
+        "value": null,
+        "image_key": null,
+        "checked": null,
+        "input_method": null,
+        "submitted_at": null
+      },
+      {
+        "id": "f34c7f39-1c3b-4937-86cf-bcbe5878ba05",
+        "signer_id": "58f4e4f4-ff6d-410e-b43a-bab978fc58ee",
+        "type": "signature",
+        "page": 1,
+        "x": 0.12,
+        "y": 0.72,
+        "width": 0.3,
+        "height": 0.08,
+        "required": true,
+        "label": "Signature",
+        "options": null,
+        "group_id": null,
+        "value": null,
+        "image_key": null,
+        "checked": null,
+        "input_method": null,
+        "submitted_at": null
+      },
+      {
+        "id": "2f86025f-1f5c-4db9-a602-a2381971ba6d",
+        "signer_id": "b139e574-f5a9-4580-9fe7-8813d01b4b74",
+        "type": "dropdown",
+        "page": 2,
+        "x": 0.12,
+        "y": 0.62,
+        "width": 0.22,
+        "height": 0.04,
+        "required": true,
+        "label": "Term",
+        "options": [
+          "Yearly",
+          "Monthly"
+        ],
+        "group_id": null,
+        "value": null,
+        "image_key": null,
+        "checked": null,
+        "input_method": null,
+        "submitted_at": null
+      },
+      {
+        "id": "9fe9d2d1-4f56-48ab-adad-0c3b368d649d",
+        "signer_id": "b139e574-f5a9-4580-9fe7-8813d01b4b74",
+        "type": "signature",
+        "page": 2,
+        "x": 0.12,
+        "y": 0.72,
+        "width": 0.3,
+        "height": 0.08,
+        "required": true,
+        "label": "Signature",
+        "options": null,
+        "group_id": null,
+        "value": null,
+        "image_key": null,
+        "checked": null,
+        "input_method": null,
+        "submitted_at": null
+      }
+    ],
+    "pdf": {
+      "key": "users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/db699bf5-6a9b-4196-81d6-17a059390948/original.pdf",
+      "sha256": "89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41",
+      "bytes": 1188
+    },
+    "signers": [
+      {
+        "id": "58f4e4f4-ff6d-410e-b43a-bab978fc58ee",
+        "name": "Riley Recipient",
+        "email": "riley@example.test",
+        "sign_order": 1,
+        "status": "pending",
+        "role": "signer",
+        "signing_token_hash": null,
+        "access_code_hash": null,
+        "require_email_code": false,
+        "signature_meaning": null
+      },
+      {
+        "id": "b139e574-f5a9-4580-9fe7-8813d01b4b74",
+        "name": "Alex Second",
+        "email": "alex@example.test",
+        "sign_order": 2,
+        "status": "pending",
+        "role": "signer",
+        "signing_token_hash": null,
+        "access_code_hash": null,
+        "require_email_code": false,
+        "signature_meaning": null
+      },
+      {
+        "id": "8d65f28e-0a17-4932-a5c1-70ae78e0cb3c",
+        "name": "Casey Copy",
+        "email": "casey.copy@example.test",
+        "sign_order": 501,
+        "status": "pending",
+        "role": "cc",
+        "signing_token_hash": null,
+        "access_code_hash": null,
+        "require_email_code": false,
+        "signature_meaning": null
+      }
+    ]
+  },
+  "original": {
+    "id": "ee2e4270-b3fd-4850-8697-05f0de589c90",
+    "status": "completed",
+    "title": "Lease renewal — copy-to-draft demo",
+    "source_pdf_key": "users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/original.pdf",
+    "source_pdf_hash": "89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41",
+    "page_count": 2,
+    "fields": [
+      {
+        "id": "9cb3a9a4-8a17-4066-b0a0-38dce8d201de",
+        "signer_id": "312fb367-ba64-4763-815f-912b745aea35",
+        "type": "text",
+        "page": 1,
+        "x": 0.12,
+        "y": 0.62,
+        "width": 0.28,
+        "height": 0.04,
+        "required": true,
+        "label": "Printed name",
+        "options": null,
+        "group_id": null,
+        "value": "Riley Recipient",
+        "image_key": null,
+        "checked": null,
+        "input_method": null,
+        "submitted_at": "1794619114"
+      },
+      {
+        "id": "67d2f111-9703-488f-8856-7c4cb2bb7c29",
+        "signer_id": "312fb367-ba64-4763-815f-912b745aea35",
+        "type": "signature",
+        "page": 1,
+        "x": 0.12,
+        "y": 0.72,
+        "width": 0.3,
+        "height": 0.08,
+        "required": true,
+        "label": "Signature",
+        "options": null,
+        "group_id": null,
+        "value": "Riley Recipient",
+        "image_key": null,
+        "checked": null,
+        "input_method": "typed",
+        "submitted_at": "1794619114"
+      },
+      {
+        "id": "07217646-2153-42d4-8156-f7df72f8c12c",
+        "signer_id": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+        "type": "dropdown",
+        "page": 2,
+        "x": 0.12,
+        "y": 0.62,
+        "width": 0.22,
+        "height": 0.04,
+        "required": true,
+        "label": "Term",
+        "options": [
+          "Yearly",
+          "Monthly"
+        ],
+        "group_id": null,
+        "value": "Yearly",
+        "image_key": null,
+        "checked": null,
+        "input_method": null,
+        "submitted_at": "1794619114"
+      },
+      {
+        "id": "3c45df9c-d21a-4470-b9f0-ff1db16c9118",
+        "signer_id": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+        "type": "signature",
+        "page": 2,
+        "x": 0.12,
+        "y": 0.72,
+        "width": 0.3,
+        "height": 0.08,
+        "required": true,
+        "label": "Signature",
+        "options": null,
+        "group_id": null,
+        "value": "Alex Second",
+        "image_key": null,
+        "checked": null,
+        "input_method": "typed",
+        "submitted_at": "1794619114"
+      }
+    ],
+    "pdf": {
+      "key": "users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/original.pdf",
+      "sha256": "89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41",
+      "bytes": 1188
+    },
+    "signers": [
+      {
+        "id": "312fb367-ba64-4763-815f-912b745aea35",
+        "name": "Riley Recipient",
+        "email": "riley@example.test",
+        "sign_order": 1,
+        "status": "signed",
+        "role": "signer",
+        "signing_token_hash": null,
+        "access_code_hash": null,
+        "require_email_code": false,
+        "signature_meaning": null
+      },
+      {
+        "id": "da0283aa-6de9-4d25-b29a-0a9123c36765",
+        "name": "Alex Second",
+        "email": "alex@example.test",
+        "sign_order": 2,
+        "status": "signed",
+        "role": "signer",
+        "signing_token_hash": null,
+        "access_code_hash": null,
+        "require_email_code": false,
+        "signature_meaning": null
+      },
+      {
+        "id": "bdc473f0-3586-4462-8948-9290214a10b8",
+        "name": "Casey Copy",
+        "email": "casey.copy@example.test",
+        "sign_order": 501,
+        "status": "pending",
+        "role": "cc",
+        "signing_token_hash": null,
+        "access_code_hash": null,
+        "require_email_code": false,
+        "signature_meaning": null
+      }
+    ]
+  },
+  "pdfKeysDiffer": true,
+  "pdfHashesEqual": true
+}
+
+# SQL: original signers
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select name, email, sign_order, status, role, signing_token_hash is not null as has_token, access_code_hash is not null as has_access_code, require_email_code from signers where envelope_id = 'ee2e4270-b3fd-4850-8697-05f0de589c90' order by sign_order;"
+      name       |          email          | sign_order | status  |  role  | has_token | has_access_code | require_email_code 
+-----------------+-------------------------+------------+---------+--------+-----------+-----------------+--------------------
+ Riley Recipient | riley@example.test      |          1 | signed  | signer | f         | f               | f
+ Alex Second     | alex@example.test       |          2 | signed  | signer | f         | f               | f
+ Casey Copy      | casey.copy@example.test |        501 | pending | cc     | f         | f               | f
+(3 rows)
+
+exit=0
+
+# SQL: new draft signers
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select name, email, sign_order, status, role, signing_token_hash is not null as has_token, access_code_hash is not null as has_access_code, require_email_code from signers where envelope_id = 'db699bf5-6a9b-4196-81d6-17a059390948' order by sign_order;"
+      name       |          email          | sign_order | status  |  role  | has_token | has_access_code | require_email_code 
+-----------------+-------------------------+------------+---------+--------+-----------+-----------------+--------------------
+ Riley Recipient | riley@example.test      |          1 | pending | signer | f         | f               | f
+ Alex Second     | alex@example.test       |          2 | pending | signer | f         | f               | f
+ Casey Copy      | casey.copy@example.test |        501 | pending | cc     | f         | f               | f
+(3 rows)
+
+exit=0
+
+# SQL: new draft fields (values must be null)
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select type, page, required, label, value, image_key, checked, input_method, submitted_at, options from fields where envelope_id = 'db699bf5-6a9b-4196-81d6-17a059390948' order by page, y;"
+   type    | page | required |    label     | value | image_key | checked | input_method | submitted_at |        options        
+-----------+------+----------+--------------+-------+-----------+---------+--------------+--------------+-----------------------
+ text      |    1 | t        | Printed name |       |           |         |              |              | 
+ signature |    1 | t        | Signature    |       |           |         |              |              | 
+ dropdown  |    2 | t        | Term         |       |           |         |              |              | ["Yearly", "Monthly"]
+ signature |    2 | t        | Signature    |       |           |         |              |              | 
+(4 rows)
+
+exit=0
+
+# SQL: envelopes storage keys
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select id, status, title, source_pdf_key, source_pdf_hash from envelopes where id in ('ee2e4270-b3fd-4850-8697-05f0de589c90', 'db699bf5-6a9b-4196-81d6-17a059390948') order by status;"
+                  id                  |  status   |               title                |                                           source_pdf_key                                           |                         source_pdf_hash                          
+--------------------------------------+-----------+------------------------------------+----------------------------------------------------------------------------------------------------+------------------------------------------------------------------
+ ee2e4270-b3fd-4850-8697-05f0de589c90 | completed | Lease renewal — copy-to-draft demo | users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/original.pdf | 89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+ db699bf5-6a9b-4196-81d6-17a059390948 | draft     | Lease renewal — copy-to-draft demo | users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/db699bf5-6a9b-4196-81d6-17a059390948/original.pdf | 89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+(2 rows)
+
+exit=0
+
+# SQL: new draft audit events
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select event, actor_type, metadata from audit_events where envelope_id = 'db699bf5-6a9b-4196-81d6-17a059390948' order by created_at;"
+ event  | actor_type |                           metadata                           
+--------+------------+--------------------------------------------------------------
+ copied | sender     | {"sourceEnvelopeId": "ee2e4270-b3fd-4850-8697-05f0de589c90"}
+(1 row)
+
+exit=0
+
+# SQL: original audit events (unchanged chain)
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select event, actor_type from audit_events where envelope_id = 'ee2e4270-b3fd-4850-8697-05f0de589c90' order by created_at;"
+   event    | actor_type 
+------------+------------
+ created    | sender
+ sent       | sender
+ viewed     | signer
+ email_sent | system
+ consented  | signer
+ signed     | signer
+ completed  | system
+ signed     | signer
+ consented  | signer
+ email_sent | system
+ viewed     | signer
+ email_sent | system
+ email_sent | system
+ email_sent | system
+ email_sent | system
+(15 rows)
+
+exit=0
+
+originalPdf.sha256=89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+draftPdf.sha256=89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+keysDiffer=true
+hashesEqual=true
+
+# 10. Outbox after copy (must be unchanged)
+before=6 after=6 unchanged=true
+{
+  "before": [
+    "1794619112240-capture-eb415067-2ad3-40cb-8cb2-b900ffa9d9b2.json",
+    "1794619114270-capture-7ae6f8d7-4d4c-4bb6-bcfd-b6543df995ce.json",
+    "1794619115135-capture-859f9f2e-89ba-48f2-a79f-82936ae3904d.json",
+    "1794619115139-capture-68b3ffb6-f65f-48a2-ade0-6ecadfe7ee0b.json",
+    "1794619115142-capture-539f661a-8d62-476b-9f41-ac4e528edeac.json",
+    "1794619115145-capture-bbd8666f-33b1-47b8-acac-c43dfb963ec7.json"
+  ],
+  "after": [
+    "1794619112240-capture-eb415067-2ad3-40cb-8cb2-b900ffa9d9b2.json",
+    "1794619114270-capture-7ae6f8d7-4d4c-4bb6-bcfd-b6543df995ce.json",
+    "1794619115135-capture-859f9f2e-89ba-48f2-a79f-82936ae3904d.json",
+    "1794619115139-capture-68b3ffb6-f65f-48a2-ade0-6ecadfe7ee0b.json",
+    "1794619115142-capture-539f661a-8d62-476b-9f41-ac4e528edeac.json",
+    "1794619115145-capture-bbd8666f-33b1-47b8-acac-c43dfb963ec7.json"
+  ]
+}
+
+# 11. Create a leftover draft and refuse copy
+$ POST http://127.0.0.1:3000/api/envelopes  # leftover draft
+HTTP 201
+{
+  "envelopeId": "c200c6b2-4cb8-43d6-a1c3-973cf0c286c2",
+  "pageCount": 2,
+  "redirectPath": "/envelopes/c200c6b2-4cb8-43d6-a1c3-973cf0c286c2/signers",
+  "sourcePdfFilename": "lease-renewal.pdf",
+  "sourcePdfSizeBytes": 1188,
+  "title": "Unsent leftover draft"
+}
+exit=0
+
+$ curl -sS -D - -o draft-refuse.json -X POST http://127.0.0.1:3000/api/envelopes/c200c6b2-4cb8-43d6-a1c3-973cf0c286c2/copy
+HTTP/1.1 409 Conflict
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:18:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"Draft envelopes cannot be copied."}
+exit=0
+
+# 12. Sign up a second verified sender and copy as non-owner (404)
+$ POST http://127.0.0.1:3000/api/auth/sign-up/email  # sign-up second sender
+HTTP 200
+{
+  "token": null,
+  "user": {
+    "name": "Jordan Sender",
+    "email": "jordan@harbour.example",
+    "emailVerified": false,
+    "image": null,
+    "createdAt": "2026-11-14T01:18:36.235Z",
+    "updatedAt": "2026-11-14T01:18:36.235Z",
+    "id": "bI1HsvW7WcC4qtqoZz2kHyGUjy5z31WL"
+  }
+}
+exit=0
+
+$ GET http://127.0.0.1:3000/api/auth/verify-email?token=eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImpvcmRhbkBoYXJib3VyLmV4YW1wbGUiLCJ1c2VySWQiOiJiSTFIc3ZXN1djQzRxdHFvWnoya0h5R1VqeTV6MzFXTCIsImlhdCI6MTc5NDYxOTExNiwiZXhwIjoxNzk0NjIyNzE2fQ.Ag8_0mXR7wJMUeMRp0oBxrxRQbZ2twizi5bRWPYKuKs&callbackURL=%2F  # verify second sender email
+HTTP 302
+
+exit=0
+
+verify redirect status=302
+$ POST http://127.0.0.1:3000/api/auth/sign-in/email  # second sender sign-in
+HTTP 200
+{
+  "redirect": false,
+  "token": "jsFyaZL3bOn8BKiUpcCdAQtutSMDlNKa",
+  "user": {
+    "name": "Jordan Sender",
+    "email": "jordan@harbour.example",
+    "emailVerified": true,
+    "image": null,
+    "createdAt": "2026-11-14T01:18:36.235Z",
+    "updatedAt": "2026-11-14T01:18:36.512Z",
+    "id": "bI1HsvW7WcC4qtqoZz2kHyGUjy5z31WL"
+  }
+}
+exit=0
+
+$ curl -sS -D - -o non-owner.json -X POST http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/copy  # other session
+HTTP/1.1 404 Not Found
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:18:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"Envelope not found."}
+exit=0
+
+# 13. Playwright screenshots of the button and the opened draft
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+  - waiting for getByRole('heading', { name: 'Copy to a new draft' }) to be visible
+
+    at main (/workspace/.data/demo/run-demo.mjs:880:68) {
+  log: [
+    "  - waiting for getByRole('heading', { name: 'Copy to a new draft' }) to be visible"
+  ],
+  name: 'TimeoutError'
+}
+exit=1
+
+# 13. Playwright screenshots of the button, dialog, and opened draft
+$ node /workspace/.data/demo/screenshots.mjs
+url=http://localhost:3000/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90 hydratedHint=true
+dialogVisibleAfterClick=true
+wrote copy-dialog.png
+[console] Failed to load resource: the server responded with a status of 404 (Not Found)
+wrote opened-draft.png url=http://localhost:3000/envelopes/db699bf5-6a9b-4196-81d6-17a059390948
+exit=0
+exit=0

@@ -1,0 +1,54 @@
+{
+  "after": [
+    {
+      "file": "1794619112240-capture-eb415067-2ad3-40cb-8cb2-b900ffa9d9b2.json",
+      "subject": "Matt Van Horn requested your signature on \"Lease renewal — copy-to-draft demo\"",
+      "template": "signing_invitation",
+      "to": [
+        "riley@example.test"
+      ]
+    },
+    {
+      "file": "1794619114270-capture-7ae6f8d7-4d4c-4bb6-bcfd-b6543df995ce.json",
+      "subject": "Matt Van Horn requested your signature on \"Lease renewal — copy-to-draft demo\"",
+      "template": "signing_invitation",
+      "to": [
+        "alex@example.test"
+      ]
+    },
+    {
+      "file": "1794619115135-capture-859f9f2e-89ba-48f2-a79f-82936ae3904d.json",
+      "subject": "\"Lease renewal — copy-to-draft demo\" is fully signed",
+      "template": "completion_notification",
+      "to": [
+        "matt@harbour.example"
+      ]
+    },
+    {
+      "file": "1794619115139-capture-68b3ffb6-f65f-48a2-ade0-6ecadfe7ee0b.json",
+      "subject": "\"Lease renewal — copy-to-draft demo\" is fully signed",
+      "template": "completion_notification",
+      "to": [
+        "riley@example.test"
+      ]
+    },
+    {
+      "file": "1794619115142-capture-539f661a-8d62-476b-9f41-ac4e528edeac.json",
+      "subject": "\"Lease renewal — copy-to-draft demo\" is fully signed",
+      "template": "completion_notification",
+      "to": [
+        "alex@example.test"
+      ]
+    },
+    {
+      "file": "1794619115145-capture-bbd8666f-33b1-47b8-acac-c43dfb963ec7.json",
+      "subject": "\"Lease renewal — copy-to-draft demo\" is fully signed",
+      "template": "completion_notification",
+      "to": [
+        "casey.copy@example.test"
+      ]
+    }
+  ],
+  "beforeCount": 6,
+  "unchanged": true
+}

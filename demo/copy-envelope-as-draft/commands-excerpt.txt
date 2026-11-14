@@ -1,0 +1,52 @@
+# Copy to new draft — live demo against local Postgres
+# 2026-11-14T01:18:28Z
+# APP_URL=http://127.0.0.1:3000
+# EMAIL_DRIVER=capture STORAGE_DRIVER=local
+
+# 8. POST /api/envelopes/:id/copy as owner (curl)
+$ curl -sS -D - -o copy-response.json -X POST -H Origin: http://127.0.0.1:3000 -H Cookie: <owner-session> http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/copy
+HTTP/1.1 201 Created
+{"id":"db699bf5-6a9b-4196-81d6-17a059390948"}
+
+# SQL: new draft signers
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select name, email, sign_order, status, role, signing_token_hash is not null as has_token, access_code_hash is not null as has_access_code, require_email_code from signers where envelope_id = 'db699bf5-6a9b-4196-81d6-17a059390948' order by sign_order;"
+      name       |          email          | sign_order | status  |  role  | has_token | has_access_code | require_email_code 
+-----------------+-------------------------+------------+---------+--------+-----------+-----------------+--------------------
+ Riley Recipient | riley@example.test      |          1 | pending | signer | f         | f               | f
+ Alex Second     | alex@example.test       |          2 | pending | signer | f         | f               | f
+ Casey Copy      | casey.copy@example.test |        501 | pending | cc     | f         | f               | f
+(3 rows)
+
+
+# SQL: new draft fields (values must be null)
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select type, page, required, label, value, image_key, checked, input_method, submitted_at, options from fields where envelope_id = 'db699bf5-6a9b-4196-81d6-17a059390948' order by page, y;"
+   type    | page | required |    label     | value | image_key | checked | input_method | submitted_at |        options        
+-----------+------+----------+--------------+-------+-----------+---------+--------------+--------------+-----------------------
+ text      |    1 | t        | Printed name |       |           |         |              |              | 
+ signature |    1 | t        | Signature    |       |           |         |              |              | 
+ dropdown  |    2 | t        | Term         |       |           |         |              |              | ["Yearly", "Monthly"]
+ signature |    2 | t        | Signature    |       |           |         |              |              | 
+(4 rows)
+
+# SQL: envelopes storage keys
+$ psql -h 127.0.0.1 -U signudoc -d signudoc  -c "select id, status, title, source_pdf_key, source_pdf_hash from envelopes where id in ('ee2e4270-b3fd-4850-8697-05f0de589c90', 'db699bf5-6a9b-4196-81d6-17a059390948') order by status;"
+                  id                  |  status   |               title                |                                           source_pdf_key                                           |                         source_pdf_hash                          
+--------------------------------------+-----------+------------------------------------+----------------------------------------------------------------------------------------------------+------------------------------------------------------------------
+ ee2e4270-b3fd-4850-8697-05f0de589c90 | completed | Lease renewal — copy-to-draft demo | users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/original.pdf | 89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+ db699bf5-6a9b-4196-81d6-17a059390948 | draft     | Lease renewal — copy-to-draft demo | users/i0k7yuKZTqbLaf9PnzT642eZ97qmZoCt/envelopes/db699bf5-6a9b-4196-81d6-17a059390948/original.pdf | 89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+
+originalPdf.sha256=89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+draftPdf.sha256=89301ab0c3872dc8a9537f0fc266e42adb5a9f5d94a819115ca97eeb2c889c41
+keysDiffer=true
+hashesEqual=true
+
+# 10. Outbox after copy (must be unchanged)
+before=6 after=6 unchanged=true
+
+$ curl -sS -D - -o draft-refuse.json -X POST http://127.0.0.1:3000/api/envelopes/c200c6b2-4cb8-43d6-a1c3-973cf0c286c2/copy
+HTTP/1.1 409 Conflict
+{"error":"Draft envelopes cannot be copied."}
+
+$ curl -sS -D - -o non-owner.json -X POST http://127.0.0.1:3000/api/envelopes/ee2e4270-b3fd-4850-8697-05f0de589c90/copy  # other session
+HTTP/1.1 404 Not Found
+{"error":"Envelope not found."}

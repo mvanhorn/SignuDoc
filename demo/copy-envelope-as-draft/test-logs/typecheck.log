@@ -1,0 +1,7 @@
+
+> signudoc@0.1.0 typecheck
+> next typegen && tsc --noEmit --incremental false
+
+Generating route types...
+✓ Types generated successfully
+exit=0
