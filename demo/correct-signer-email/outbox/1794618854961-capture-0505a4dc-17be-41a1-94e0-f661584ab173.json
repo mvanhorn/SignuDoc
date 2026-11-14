@@ -1,0 +1,19 @@
+{
+  "from": "Harbour Finch Legal <dev@signudoc.localhost>",
+  "html": "<p>Hi Rily Recipient,</p><p>Ada Admin sent you &ldquo;Office lease&rdquo; through Harbour Finch Legal.</p><p><a href=\"http://localhost:3000/sign/vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\">Review and sign the document</a></p><p>This request expires on November 21, 2026 at 1:14 AM UTC.</p><p>You do not need a Harbour Finch Legal account to sign.</p><p>If you receive a newer invitation or reminder link, use the newest one.</p><hr style=\"margin:24px 0;border:none;border-top:1px solid #e2e2e2;\" /><p><a href=\"http://localhost:3000/signer-privacy\">Privacy notice</a><br />Questions? Contact <a href=\"mailto:help@example.com\">help@example.com</a>.<br />Sent by Harbour Finch Legal using SignuDoc.</p>",
+  "replyTo": "help@example.com",
+  "subject": "Ada Admin requested your signature on \"Office lease\"",
+  "tags": [
+    {
+      "name": "category",
+      "value": "signing_invitation"
+    }
+  ],
+  "text": "Hi Rily Recipient,\n\nAda Admin sent you \"Office lease\" through Harbour Finch Legal.\n\nReview and sign the document here:\nhttp://localhost:3000/sign/vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\n\nThis request expires on November 21, 2026 at 1:14 AM UTC.\n\nYou do not need a Harbour Finch Legal account to sign.\nIf you receive a newer invitation or reminder link, use the newest one.\n\nPrivacy notice:\nhttp://localhost:3000/signer-privacy\n\nQuestions? Contact help@example.com.\n\nSent by Harbour Finch Legal using SignuDoc.",
+  "to": [
+    "rily.recipent@example.com"
+  ],
+  "capturedAt": "2026-11-14T01:14:14.961Z",
+  "messageId": "capture-0505a4dc-17be-41a1-94e0-f661584ab173",
+  "template": "signing_invitation"
+}

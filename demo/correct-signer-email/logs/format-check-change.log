@@ -1,0 +1,5 @@
+=== prettier --check of this change ===
+Checking formatting...
+[error] No parser could be inferred for file "/workspace/db/migrations/20261116090000_signer_corrected.sql".
+Error occurred when checking code style in the above file.
+prettier --check (change) exit: 2

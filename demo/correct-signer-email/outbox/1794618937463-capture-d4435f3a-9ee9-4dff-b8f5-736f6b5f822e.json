@@ -1,0 +1,19 @@
+{
+  "from": "Harbour Finch Legal <dev@signudoc.localhost>",
+  "html": "<p>Hi Ada Admin,</p><p>Ada Admin sent you &ldquo;Batch record&rdquo; through Harbour Finch Legal.</p><p><a href=\"http://localhost:3000/sign/5KXdObV4s-Db1Q1pqTSCTkfP4ACzHLmh72KXprhkRck\">Review and sign the document</a></p><p>This request expires on November 21, 2026 at 1:15 AM UTC.</p><p>You do not need a Harbour Finch Legal account to sign.</p><p>If you receive a newer invitation or reminder link, use the newest one.</p><hr style=\"margin:24px 0;border:none;border-top:1px solid #e2e2e2;\" /><p><a href=\"http://localhost:3000/signer-privacy\">Privacy notice</a><br />Questions? Contact <a href=\"mailto:help@example.com\">help@example.com</a>.<br />Sent by Harbour Finch Legal using SignuDoc.</p>",
+  "replyTo": "help@example.com",
+  "subject": "Ada Admin requested your signature on \"Batch record\"",
+  "tags": [
+    {
+      "name": "category",
+      "value": "signing_invitation"
+    }
+  ],
+  "text": "Hi Ada Admin,\n\nAda Admin sent you \"Batch record\" through Harbour Finch Legal.\n\nReview and sign the document here:\nhttp://localhost:3000/sign/5KXdObV4s-Db1Q1pqTSCTkfP4ACzHLmh72KXprhkRck\n\nThis request expires on November 21, 2026 at 1:15 AM UTC.\n\nYou do not need a Harbour Finch Legal account to sign.\nIf you receive a newer invitation or reminder link, use the newest one.\n\nPrivacy notice:\nhttp://localhost:3000/signer-privacy\n\nQuestions? Contact help@example.com.\n\nSent by Harbour Finch Legal using SignuDoc.",
+  "to": [
+    "ada.admin@example.com"
+  ],
+  "capturedAt": "2026-11-14T01:15:37.463Z",
+  "messageId": "capture-d4435f3a-9ee9-4dff-b8f5-736f6b5f822e",
+  "template": "signing_invitation"
+}

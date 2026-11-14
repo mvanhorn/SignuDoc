@@ -1,0 +1,611 @@
+
+# Environment
+
+$ node -v
+v24.22.3
+exit 0
+
+$ psql postgres://signudoc:signudoc@127.0.0.1:5432/signudoc -c "SELECT version();"
+                                                                version                                                                
+---------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 17.12 (Ubuntu 17.12-1.pgdg24.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+(1 row)
+exit 0
+
+$ curl -sS -o /dev/null -w "app_http_code:%{http_code}\n" http://localhost:3000/icon.svg
+app_http_code:200
+exit 0
+
+
+# Create administrator via POST /api/setup
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary "{\"email\":\"ada.admin@example.com\",\"fullName\":\"Ada Admin\",\"organizationName\":\"Harbour Finch Legal\",\"password\":\"correct horse battery staple 42\",\"supportAddress\":\"help@example.com\"}" http://localhost:3000/api/setup
+HTTP/1.1 201 Created
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+set-cookie: better-auth.session_token=2MK8QGMoIyAUOlncxhWaptXE2QnAH7rK.OLc1TTFFp0wrE35IWWHOHXF1cyJeIUeyGXUHuNBfwU4%3D; Path=/; Expires=Sat, 21 Nov 2026 01:14:14 GMT; Max-Age=604800; HttpOnly; SameSite=lax
+set-cookie: better-auth.session_data=eyJzZXNzaW9uIjp7InNlc3Npb24iOnsiZXhwaXJlc0F0IjoiMjAyNi0xMS0yMVQwMToxNDoxNC42NTFaIiwidG9rZW4iOiIyTUs4UUdNb0l5QVVPbG5jeGhXYXB0WEUyUW5BSDdySyIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTRUMDE6MTQ6MTQuNjUxWiIsInVwZGF0ZWRBdCI6IjIwMjYtMTEtMTRUMDE6MTQ6MTQuNjUxWiIsImlwQWRkcmVzcyI6IjAwMDA6MDAwMDowMDAwOjAwMDA6MDAwMDowMDAwOjAwMDA6MDAwMCIsInVzZXJBZ2VudCI6ImN1cmwvOC41LjAiLCJ1c2VySWQiOiI4VlFpYm52d2lMWlVnV1ZrVjZxYThFMjdaMks3Mm43ZCIsImlkIjoiUW55VEgyT1k4Y3IyVzFDd2tZR0pCWlpnMWYwTFZUbFkifSwidXNlciI6eyJuYW1lIjoiQWRhIEFkbWluIiwiZW1haWwiOiJhZGEuYWRtaW5AZXhhbXBsZS5jb20iLCJlbWFpbFZlcmlmaWVkIjp0cnVlLCJpbWFnZSI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNi0xMS0xNFQwMToxNDoxNC41NzVaIiwidXBkYXRlZEF0IjoiMjAyNi0xMS0xNFQwMToxNDoxNC40OThaIiwiaWQiOiI4VlFpYm52d2lMWlVnV1ZrVjZxYThFMjdaMks3Mm43ZCJ9LCJ1cGRhdGVkQXQiOjE3OTQ2MTg4NTQ2NTMsInZlcnNpb24iOiIxIn0sImV4cGlyZXNBdCI6MTc5NDYxOTE1NDY1Mywic2lnbmF0dXJlIjoiZG43SUdjTUFfUVRLekZfTDVIekZoWDJhTVVyMTNselJ0cjlRUWdvS2RhUSJ9; Path=/; Expires=Sat, 14 Nov 2026 01:19:14 GMT; Max-Age=300; HttpOnly; SameSite=lax
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"redirectTo":"/settings#organization"}
+exit 0
+
+
+# Sign in
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary "{\"email\":\"ada.admin@example.com\",\"password\":\"correct horse battery staple 42\"}" http://localhost:3000/api/auth/sign-in/email
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+set-cookie: better-auth.session_token=WACP0XruqfvijJz7496jrQHuKvr8n74G.kaIiO%2B%2BlfPI%2Bkr3TSwMK5baF5gHyMpbAB4RkoGkqVgY%3D; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax
+set-cookie: better-auth.session_data=eyJzZXNzaW9uIjp7InNlc3Npb24iOnsiZXhwaXJlc0F0IjoiMjAyNi0xMS0yMVQwMToxNDoxNC43MzZaIiwidG9rZW4iOiJXQUNQMFhydXFmdmlqSno3NDk2anJRSHVLdnI4bjc0RyIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTRUMDE6MTQ6MTQuNzM2WiIsInVwZGF0ZWRBdCI6IjIwMjYtMTEtMTRUMDE6MTQ6MTQuNzM2WiIsImlwQWRkcmVzcyI6IjAwMDA6MDAwMDowMDAwOjAwMDA6MDAwMDowMDAwOjAwMDA6MDAwMCIsInVzZXJBZ2VudCI6ImN1cmwvOC41LjAiLCJ1c2VySWQiOiI4VlFpYm52d2lMWlVnV1ZrVjZxYThFMjdaMks3Mm43ZCIsImlkIjoiY3ZWMXFHWFpVOWw2dEVURkF3VWp4bE5rVU1DbFN0VloifSwidXNlciI6eyJuYW1lIjoiQWRhIEFkbWluIiwiZW1haWwiOiJhZGEuYWRtaW5AZXhhbXBsZS5jb20iLCJlbWFpbFZlcmlmaWVkIjp0cnVlLCJpbWFnZSI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNi0xMS0xNFQwMToxNDoxNC41NzVaIiwidXBkYXRlZEF0IjoiMjAyNi0xMS0xNFQwMToxNDoxNC40OThaIiwiaWQiOiI4VlFpYm52d2lMWlVnV1ZrVjZxYThFMjdaMks3Mm43ZCJ9LCJ1cGRhdGVkQXQiOjE3OTQ2MTg4NTQ3MzgsInZlcnNpb24iOiIxIn0sImV4cGlyZXNBdCI6MTc5NDYxOTE1NDczOCwic2lnbmF0dXJlIjoiUXRGbVRlUG5KMDRqR0JvQm9IRjFJdERENGtNaUttWUIwZzlraTlyb3F3MCJ9; Max-Age=300; Path=/; HttpOnly; SameSite=Lax
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"redirect":false,"token":"WACP0XruqfvijJz7496jrQHuKvr8n74G","user":{"name":"Ada Admin","email":"ada.admin@example.com","emailVerified":true,"image":null,"createdAt":"2026-11-14T01:14:14.575Z","updatedAt":"2026-11-14T01:14:14.498Z","id":"8VQibnvwiLZUgWVkV6qa8E27Z2K72n7d"}}
+exit 0
+
+
+# Create draft envelope (upload PDF)
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -F "title=Office lease" -F file=@/tmp/correct-signer-demo/sample.pdf;type=application/pdf;filename=office-lease.pdf http://localhost:3000/api/envelopes
+HTTP/1.1 201 Created
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","pageCount":1,"redirectPath":"/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/signers","sourcePdfFilename":"office-lease.pdf","sourcePdfSizeBytes":916,"title":"Office lease"}
+exit 0
+
+# envelopeId=b912ebe6-f43d-4d26-bff1-f682d491bb98
+
+
+# Add signers (typo on signer 1)
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PUT -H "Content-Type: application/json" --data-binary "{\"signers\":[{\"email\":\"rily.recipent@example.com\",\"name\":\"Rily Recipient\",\"signOrder\":1},{\"email\":\"casey.second@example.com\",\"name\":\"Casey Second\",\"signOrder\":2}]}" http://localhost:3000/api/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/signers
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"copyRecipients":[],"envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","redirectPath":"/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/prepare","signers":[{"email":"rily.recipent@example.com","id":"6543ed57-8dfe-4a28-b3a6-be2d4c813651","hasAccessCode":false,"name":"Rily Recipient","requireEmailCode":false,"signatureMeaning":null,"signOrder":1},{"email":"casey.second@example.com","id":"688f6f16-0f4a-48d3-b7da-aa358aa72e3b","hasAccessCode":false,"name":"Casey Second","requireEmailCode":false,"signatureMeaning":null,"signOrder":2}],"updatedAt":1794618854}
+exit 0
+
+# firstSignerId=6543ed57-8dfe-4a28-b3a6-be2d4c813651
+# secondSignerId=688f6f16-0f4a-48d3-b7da-aa358aa72e3b
+
+
+# Place a signature field for each signer
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PUT -H "Content-Type: application/json" --data-binary {"fields":[{"height":0.08,"page":1,"required":true,"signerId":"6543ed57-8dfe-4a28-b3a6-be2d4c813651","type":"signature","width":0.28,"x":0.12,"y":0.72},{"height":0.08,"page":1,"required":true,"signerId":"688f6f16-0f4a-48d3-b7da-aa358aa72e3b","type":"signature","width":0.28,"x":0.12,"y":0.58}]} http://localhost:3000/api/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/fields
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","fields":[{"id":"01563c48-218e-45a5-a217-f5c6228eaff0","envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","signerId":"6543ed57-8dfe-4a28-b3a6-be2d4c813651","type":"signature","page":1,"x":0.12,"y":0.72,"width":0.28,"height":0.08,"required":true},{"id":"c607457c-935f-404c-8b56-85997d00191b","envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","signerId":"688f6f16-0f4a-48d3-b7da-aa358aa72e3b","type":"signature","page":1,"x":0.12,"y":0.58,"width":0.28,"height":0.08,"required":true}],"redirectPath":"/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/review","updatedAt":1794618854}
+exit 0
+
+
+# Send the envelope
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary {"expiresInDays":7,"permittedUseConfirmed":true} http://localhost:3000/api/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/send
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","expiresAt":1795223654,"notifiedSignerName":"Rily Recipient","redirectPath":"/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98","sentAt":1794618854}
+exit 0
+
+
+# Invitation captured for the typo address
+
+$ ls -la /workspace/.data/outbox
+total 12
+drwxr-xr-x 2 ubuntu ubuntu 4096 Nov 14 01:14 .
+drwxr-xr-x 5 ubuntu ubuntu 4096 Nov 14 01:14 ..
+-rw-r--r-- 1 ubuntu ubuntu 1713 Nov 14 01:14 1794618854961-capture-0505a4dc-17be-41a1-94e0-f661584ab173.json
+exit 0
+
+$ jq . /workspace/.data/outbox/1794618854961-capture-0505a4dc-17be-41a1-94e0-f661584ab173.json
+{
+  "from": "Harbour Finch Legal <dev@signudoc.localhost>",
+  "html": "<p>Hi Rily Recipient,</p><p>Ada Admin sent you &ldquo;Office lease&rdquo; through Harbour Finch Legal.</p><p><a href=\"http://localhost:3000/sign/vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\">Review and sign the document</a></p><p>This request expires on November 21, 2026 at 1:14 AM UTC.</p><p>You do not need a Harbour Finch Legal account to sign.</p><p>If you receive a newer invitation or reminder link, use the newest one.</p><hr style=\"margin:24px 0;border:none;border-top:1px solid #e2e2e2;\" /><p><a href=\"http://localhost:3000/signer-privacy\">Privacy notice</a><br />Questions? Contact <a href=\"mailto:help@example.com\">help@example.com</a>.<br />Sent by Harbour Finch Legal using SignuDoc.</p>",
+  "replyTo": "help@example.com",
+  "subject": "Ada Admin requested your signature on \"Office lease\"",
+  "tags": [
+    {
+      "name": "category",
+      "value": "signing_invitation"
+    }
+  ],
+  "text": "Hi Rily Recipient,\n\nAda Admin sent you \"Office lease\" through Harbour Finch Legal.\n\nReview and sign the document here:\nhttp://localhost:3000/sign/vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\n\nThis request expires on November 21, 2026 at 1:14 AM UTC.\n\nYou do not need a Harbour Finch Legal account to sign.\nIf you receive a newer invitation or reminder link, use the newest one.\n\nPrivacy notice:\nhttp://localhost:3000/signer-privacy\n\nQuestions? Contact help@example.com.\n\nSent by Harbour Finch Legal using SignuDoc.",
+  "to": [
+    "rily.recipent@example.com"
+  ],
+  "capturedAt": "2026-11-14T01:14:14.961Z",
+  "messageId": "capture-0505a4dc-17be-41a1-94e0-f661584ab173",
+  "template": "signing_invitation"
+}
+exit 0
+
+# oldSigningToken=vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I
+
+
+# PATCH correction of signer 1
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PATCH -H "Content-Type: application/json" --data-binary "{\"email\":\"riley.recipient@example.com\",\"name\":\"Riley Recipient\"}" http://localhost:3000/api/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/signers/6543ed57-8dfe-4a28-b3a6-be2d4c813651
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:14:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"email":"riley.recipient@example.com","envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","invitationSent":true,"name":"Riley Recipient","signerId":"6543ed57-8dfe-4a28-b3a6-be2d4c813651"}
+exit 0
+
+
+# GET the old signing link (should be invalid)
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X GET http://localhost:3000/api/signing/vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I
+HTTP/1.1 410 Gone
+cache-control: private, no-store
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-robots-tag: noindex, nofollow
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:14:15 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"This link has expired.","state":"expired"}
+exit 0
+
+$ curl -sS -sS -D - http://localhost:3000/sign/vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I
+HTTP/1.1 200 OK
+cache-control: private, no-store
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-robots-tag: noindex, nofollow
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+Link: </_next/static/media/d8aeca813a9ab546-s.p.18rizl4rsrl42.woff2>; rel=preload; as="font"; crossorigin=""; type="font/woff2", </_next/static/chunks/0xbe-u3qogcwv.css>; rel=preload; as="style"
+X-Powered-By: Next.js
+Content-Type: text/html; charset=utf-8
+Date: Sat, 14 Nov 2026 01:14:15 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/chunks/0xbe-u3qogcwv.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/3e_fzwjzeck3j.js"/><script src="/_next/static/chunks/1jyprmhrv9oo6.js" async=""></script><script src="/_next/static/chunks/0orgij-e3ecvf.js" async=""></script><script src="/_next/static/chunks/4355886xtv186.js" async=""></script><script src="/_next/static/chunks/turbopack-077hmtqrhcoji.js" async=""></script><script src="/_next/static/chunks/3b0_fnk4o99xw.js" async=""></script><script src="/_next/static/chunks/0nc5ot7smcp1r.js" async=""></script><script src="/_next/static/chunks/069db2587y8xx.js" async=""></script><script src="/_next/static/chunks/0pefbfig-w17s.js" async=""></script><script src="/_next/static/chunks/31-2j44pa95d7.js" async=""></script><script src="/_next/static/chunks/1a8iqi17qywm4.js" async=""></script><script src="/_next/static/chunks/0ocqjuey_8sss.js" async=""></script><script src="/_next/static/chunks/17txoawlt81ib.js" async=""></script><script src="/_next/static/chunks/04tb59-dbtvwm.js" async=""></script><script src="/_next/static/chunks/2ctphb6wr8wp9.js" async=""></script><title>Harbour Finch Legal</title><meta name="description" content="Send and sign documents with Harbour Finch Legal."/><link rel="icon" href="/icon.svg"/><meta name="next-size-adjust" content=""/><script src="/_next/static/chunks/0cz1d0mv5g_q7.js" noModule=""></script></head><body class="Fim5IG_variable antialiased"><div hidden=""><!--$--><!--/$--></div><div class="flex min-h-screen flex-col"><header><div class="page-width flex items-center py-4"><a aria-label="Harbour Finch Legal" class="inline-flex min-w-0 items-center gap-2.5 text-(--fg)" href="/"><span aria-hidden="true" class="inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5625rem] bg-(--accent)"><svg fill="none" height="16" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="16"><path d="M4 16c3 0 4-8 7-8s2 7 5 7 2-3 4-3"></path></svg></span><span class="max-w-[52vw] truncate text-[1.125rem] font-extrabold tracking-[-0.02em] sm:max-w-[22rem] sm:text-[1.1875rem]">Harbour Finch Legal</span></a></div></header><main class="page-width flex flex-1 items-center justify-center py-10"><section class="panel w-full max-w-[640px] px-6 py-12 text-center sm:px-12 sm:py-14" data-animate="enter"><span aria-hidden="true" class="mx-auto inline-flex size-14 items-center justify-center rounded-2xl bg-(--accent-soft) text-(--accent)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text size-6" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></span><h1 class="mt-6 text-[clamp(1.625rem,4vw,2.125rem)] font-extrabold leading-tight tracking-[-0.03em] text-(--fg)">This link has expired</h1><p class="mx-auto mt-3 max-w-[460px] text-base leading-7 text-(--secondary)">Request a new signing link from the sender.</p></section></main><footer class="relative z-10"><div class="page-width py-7"><div class="flex flex-col items-center justify-between gap-4 sm:flex-row"><p class="text-[0.8125rem] text-(--tertiary)">© <!-- -->2026<!-- --> <!-- -->Harbour Finch Legal</p><nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2"><a class="text-[0.8125rem] font-medium text-(--tertiary) transition-colors hover:text-(--accent-ink)" href="/signer-privacy">Privacy</a><a class="text-[0.8125rem] font-medium text-(--tertiary) transition-colors hover:text-(--accent-ink)" href="/electronic-signatures">E-signatures</a></nav><a class="text-[0.8125rem] font-medium text-(--tertiary) transition-colors hover:text-(--accent-ink)" href="https://github.com/NYLLON-SOFTWARE/SignuDoc" rel="noreferrer" target="_blank">Powered by <!-- -->SignuDoc</a></div></div></footer></div><!--$--><!--/$--><script id="_R_">(globalThis["TURBOPACK"] || (globalThis["TURBOPACK"] = [])).push({"otherChunks":["static/chunks/3e_fzwjzeck3j.js","static/chunks/1jyprmhrv9oo6.js","static/chunks/0orgij-e3ecvf.js","static/chunks/4355886xtv186.js"],"runtimeModuleIds":[494553]});</script><script src="/_next/static/chunks/3e_fzwjzeck3j.js" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n2:\"/_next/static/chunks/3b0_fnk4o99xw.js\"\n3:\"/_next/static/chunks/0nc5ot7smcp1r.js\"\n4:\"/_next/static/chunks/069db2587y8xx.js\"\n5:\"/_next/static/chunks/0pefbfig-w17s.js\"\n6:I[746798,[\"$2\",\"$3\",\"$4\",\"$5\"],\"TooltipProvider\"]\n7:I[339756,[\"$2\",\"$3\",\"$4\",\"$5\"],\"default\"]\n8:I[837457,[\"$2\",\"$3\",\"$4\",\"$5\"],\"default\"]\n9:\"/_next/static/chunks/31-2j44pa95d7.js\"\na:I[104536,[\"$2\",\"$3\",\"$4\",\"$5\",\"$9\"],\"NotFoundShell\"]\n11:I[897367,[\"$2\",\"$3\",\"$4\",\"$5\"],\"OutletBoundary\"]\n12:\"$Sreact.suspense\"\n14:\"ViewportBoundary\"\n15:I[897367,[\"$2\",\"$3\",\"$4\",\"$5\"],\"$14\"]\n17:\"MetadataBoundary\"\n18:I[897367,[\"$2\",\"$3\",\"$4\",\"$5\"],\"$17\"]\n1a:I[168027,[\"$2\",\"$3\",\"$4\",\"$5\"],\"default\",1]\n:HL[\"/_next/static/chunks/0xbe-u3qogcwv.css\",\"style\"]\n:HL[\"/_next/static/media/d8aeca813a9ab546-s.p.18rizl4rsrl42.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\nc:X\nf:[[\"children\",{\"s\":\"__PAGE__\",\"d\":{\"r\":[\"$\",\"$1\",\"c\",{\"children\":[\"$L10\",[[\"$\",\"script\",\"script-0\",{\"src\":\"/_next/static/chunks/0ocqjuey_8sss.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-1\",{\"src\":\"/_next/static/chunks/17txoawlt81ib.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-2\",{\"src\":\"/_next/static/chunks/04tb59-dbtvwm.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-3\",{\"src\":\"/_next/static/chunks/2ctphb6wr8wp9.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"$L11\",null,{\"children\":[\"$\",\"$12\",null,{\"name\":\"Next.MetadataOutlet\",\"children\":\"$@13\"}]}]]}],\"p\":false,\"v\":null}}]]\nd:[[\"children\",{\"s\":{\"n\":\"token\",\"t\":\"d\",\"k\":\"vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\",\"s\":[]},\"d\":{\"r\":[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"script\",\"script-0\",{\"src\":\"/_next/static/chunks/1a8iqi17qywm4.js\",\"async\":true,\"nonce\":\"$undefined\"}]],\"$Le\"]}],\"p\":false,\"v\":null},\"c\":\"$Qf\"}]]\nb:[[\"children\",{\"s\":\"sign\",\"d\":{\"r\":[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L8\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}],\"p\":false,\"v\":\"$c\"},\"c\":\"$Qd\"}]]\n0:{\"P\":null,\"c\":[\"\",\"sign\",\"vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\"],\"q\":\"\",\"i\":false,\"t\":{\"t\":{\"s\":\"\",\"h\":16,\"d\":{\"r\":[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/chunks/0xbe-u3qogcwv.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-0\",{\"src\":\"/_next/static/chunks/3b0_fnk4o99xw.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-1\",{\"src\":\"/_next/static/chunks/0nc5ot7smcp1r.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-2\",{\"src\":\"/_next/static/chunks/069db2587y8xx.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-3\",{\"src\":\"/_next/static/chunks/0pefbfig-w17s.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"en\",\"children\":[\"$\",\"body\",null,{\"className\":\"Fim5IG_variable antialiased\",\"children\":[\"$\",\"$L6\",null,{\"children\":[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L8\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[\"$\",\"$La\",null,{\"initialState\":\"default\"}],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]}]]}],\"p\":false,\"v\":null},\"c\":\"$Qb\"},\"h\":{\"r\":[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$L15\",null,{\"children\":\"$L16\"}],[\"$\",\"$L18\",null,{\"children\":[[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$12\",null,{\"name\":\"Next.Metadata\",\"children\":\"$L19\"}]}],null]}],[\"$\",\"meta\",null,{\"name\":\"next-size-adjust\",\"content\":\"\"}]]}],\"p\":false,\"v\":null}},\"m\":\"$undefined\",\"G\":[\"$1a\",[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/chunks/0xbe-u3qogcwv.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]]],\"S\":false,\"r\":\"$undefined\",\"s\":\"$undefined\",\"a\":\"$undefined\",\"l\":\"$undefined\",\"p\":\"$undefined\",\"d\":\"$undefined\",\"b\":\"xzjOS4D9A-vCgtl1aopwW\"}\n1b:\"/_next/static/chunks/1a8iqi17qywm4.js\"\n1c:\"BrandingProvider\"\n1d:I[657532,[\"$2\",\"$3\",\"$4\",\"$5\",\"$1b\"],\"$1c\"]\nc:C\ne:[\"$\",\"$L1d\",null,{\"branding\":{\"brandColor\":null,\"contactUrl\":null,\"hosted\":false,\"logoUrl\":null,\"organizationName\":\"Harbour Finch Legal\",\"privacyUrl\":null,\"productName\":\"Harbour Finch Legal\",\"signupAvailable\":true,\"supportAddress\":\"help@example.com\",\"termsUrl\":null},\"children\":[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L8\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]\n16:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\n1e:I[27201,[\"$2\",\"$3\",\"$4\",\"$5\"],\"IconMark\"]\n13:null\n19:[[\"$\",\"title\",\"0\",{\"children\":\"Harbour Finch Legal\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Send and sign documents with Harbour Finch Legal.\"}],[\"$\",\"link\",\"2\",{\"rel\":\"icon\",\"href\":\"/icon.svg\"}],[\"$\",\"$L1e\",\"3\",{}]]\n1f:\"/_next/static/chunks/0ocqjuey_8sss.js\"\n20:\"/_next/static/chunks/17txoawlt81ib.js\"\n21:\"/_next/static/chunks/04tb59-dbtvwm.js\"\n22:\"/_next/static/chunks/2ctphb6wr8wp9.js\"\n23:I[946145,[\"$2\",\"$3\",\"$4\",\"$5\",\"$1b\",\"$1f\",\"$20\",\"$21\",\"$22\"],\"SigningShell\"]\n10:[[\"$\",\"$L23\",\"vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\",{\"initialState\":\"expired\",\"record\":\"$undefined\",\"token\":\"vL_77iWL91LzaQ5LMcuS4-hLTvtMcwSBz2p7i67JJ4I\",\"verification\":\"$undefined\"}]]\n"])</script></body></html>
+exit 0
+
+
+# New invitation captured for the corrected address
+
+$ ls -la /workspace/.data/outbox
+total 16
+drwxr-xr-x 2 ubuntu ubuntu 4096 Nov 14 01:14 .
+drwxr-xr-x 5 ubuntu ubuntu 4096 Nov 14 01:14 ..
+-rw-r--r-- 1 ubuntu ubuntu 1713 Nov 14 01:14 1794618854961-capture-0505a4dc-17be-41a1-94e0-f661584ab173.json
+-rw-r--r-- 1 ubuntu ubuntu 1717 Nov 14 01:14 1794618854987-capture-6b2eeee4-4a6d-4c72-ba06-e26ddf9c2972.json
+exit 0
+
+$ jq "{capturedAt, template, to, subject, text}" /workspace/.data/outbox/1794618854987-capture-6b2eeee4-4a6d-4c72-ba06-e26ddf9c2972.json
+{
+  "capturedAt": "2026-11-14T01:14:14.987Z",
+  "template": "signing_invitation",
+  "to": [
+    "riley.recipient@example.com"
+  ],
+  "subject": "Ada Admin requested your signature on \"Office lease\"",
+  "text": "Hi Riley Recipient,\n\nAda Admin sent you \"Office lease\" through Harbour Finch Legal.\n\nReview and sign the document here:\nhttp://localhost:3000/sign/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo\n\nThis request expires on November 21, 2026 at 1:14 AM UTC.\n\nYou do not need a Harbour Finch Legal account to sign.\nIf you receive a newer invitation or reminder link, use the newest one.\n\nPrivacy notice:\nhttp://localhost:3000/signer-privacy\n\nQuestions? Contact help@example.com.\n\nSent by Harbour Finch Legal using SignuDoc."
+}
+exit 0
+
+# newSigningToken=v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo
+
+
+# Audit CSV includes signer_corrected in plain words
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X GET http://localhost:3000/api/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/audit
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-disposition: attachment; filename="Office lease-audit-trail.csv"
+content-type: text/csv; charset=utf-8
+Date: Sat, 14 Nov 2026 01:14:15 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+Envelope,b912ebe6-f43d-4d26-bff1-f682d491bb98,Office lease
+Part 11 envelope,no
+Exported at (UTC),2026-11-14T01:14:15.241Z
+Hash chain check,intact (5 chained events)
+
+sequence,time_utc,event,actor_type,actor_email,ip_address,user_agent,details,event_id,previous_hash,row_hash
+1,2026-11-14T01:14:14.000Z,created,sender,,,,,5a642737-8ae5-43d3-9537-c1997b9c453c,,43f91d762d58fbc85a14d4923473f403ca66a9dfc99e8092f5de1378fae85565
+2,2026-11-14T01:14:15.000Z,sent,sender,ada.admin@example.com,::1,curl/8.5.0,"{""signerId"":""6543ed57-8dfe-4a28-b3a6-be2d4c813651"",""expiresAt"":1795223654,""signerName"":""Rily Recipient"",""signerEmail"":""rily.recipent@example.com"",""permittedUseVersion"":""2026-11-13"",""reminderIntervalDays"":null,""permittedUseConfirmed"":true}",e8ba7715-533e-40c4-af14-1fcc15e6c308,43f91d762d58fbc85a14d4923473f403ca66a9dfc99e8092f5de1378fae85565,d38ac9e08a5ffc0ba6ca22901be17cf52d77b8925a94cbdb3574c881a357ec8b
+3,2026-11-14T01:14:14.000Z,email_sent,system,,,,"{""signerId"":""6543ed57-8dfe-4a28-b3a6-be2d4c813651"",""template"":""signing_invitation"",""messageId"":""capture-0505a4dc-17be-41a1-94e0-f661584ab173"",""recipient"":""rily.recipent@example.com""}",3b9285ff-6831-495d-9d2f-b9d7d79d7df3,d38ac9e08a5ffc0ba6ca22901be17cf52d77b8925a94cbdb3574c881a357ec8b,33fc0dd2a3c49c71d106074550db4463e53c5f499c5f5d953603533cb8e66678
+4,2026-11-14T01:14:14.000Z,Signer corrected,sender,ada.admin@example.com,::1,curl/8.5.0,Signer corrected from Rily Recipient <rily.recipent@example.com> to Riley Recipient <riley.recipient@example.com>,4b086501-c36f-407b-aa93-35833e1df1db,33fc0dd2a3c49c71d106074550db4463e53c5f499c5f5d953603533cb8e66678,02668daa055bbb04daeee23390c0586ec181e571bc5496d1b5ca44c45c742a12
+5,2026-11-14T01:14:14.000Z,email_sent,system,,,,"{""signerId"":""6543ed57-8dfe-4a28-b3a6-be2d4c813651"",""template"":""signing_invitation"",""messageId"":""capture-6b2eeee4-4a6d-4c72-ba06-e26ddf9c2972"",""recipient"":""riley.recipient@example.com""}",131c61a8-932f-4a4c-91e0-4f490b665fde,02668daa055bbb04daeee23390c0586ec181e571bc5496d1b5ca44c45c742a12,90cdd2efbed205111c7e95dfac4b7306c1858bee9006e42c6978e2b885a92709
+exit 0
+
+# CSV lines mentioning Signer corrected:
+4,2026-11-14T01:14:14.000Z,Signer corrected,sender,ada.admin@example.com,::1,curl/8.5.0,Signer corrected from Rily Recipient <rily.recipent@example.com> to Riley Recipient <riley.recipient@example.com>,4b086501-c36f-407b-aa93-35833e1df1db,33fc0dd2a3c49c71d106074550db4463e53c5f499c5f5d953603533cb8e66678,02668daa055bbb04daeee23390c0586ec181e571bc5496d1b5ca44c45c742a12
+
+
+# Playwright screenshots of the Change dialog and timeline
+
+$ node /tmp/correct-signer-demo/screenshots.mjs
+node:internal/modules/package_json_reader:331
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@playwright/test' imported from /tmp/correct-signer-demo/screenshots.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+    at packageResolve (node:internal/modules/esm/resolve:784:25)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.22.3
+exit 1
+
+
+# Playwright screenshots of the Change dialog and timeline
+
+$ node /workspace/.data/demo-runner/screenshots.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+  - waiting for getByRole('dialog', { name: 'Correct this signer' }) to be visible
+
+    at /workspace/.data/demo-runner/screenshots.mjs:28:65 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: 'Correct this signer' }) to be visible"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.22.3
+exit 1
+
+
+# Playwright screenshots of the Change dialog and timeline
+
+$ node /workspace/.data/demo-runner/screenshots.mjs
+wrote screenshots to /tmp/correct-signer-demo/screenshots
+exit 0
+
+
+# Signer 1 signs, then PATCH is refused
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary {"disclosureVersion":"2026-11-13"} http://localhost:3000/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/consent
+HTTP/1.1 200 OK
+cache-control: private, no-store
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-robots-tag: noindex, nofollow
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"consentedAt":1794618937}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X GET http://localhost:3000/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo
+HTTP/1.1 200 OK
+cache-control: private, no-store
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-robots-tag: noindex, nofollow
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"consentUrl":"/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/consent","consentedAt":1794618937,"currentSignerFields":[{"height":0.08,"id":"01563c48-218e-45a5-a217-f5c6228eaff0","page":1,"required":true,"signerId":"6543ed57-8dfe-4a28-b3a6-be2d4c813651","type":"signature","width":0.28,"x":0.12,"y":0.72,"signerName":"Riley Recipient"}],"disclosure":{"sections":[{"heading":"Using electronic records and signatures","text":"Ada Admin asks you to receive this document and sign it electronically instead of on paper. If you agree, your electronic signature has the same effect as a handwritten one, and the documents you receive this way count as delivered to you in writing."},{"heading":"You can choose paper instead","text":"You do not have to agree. To sign on paper instead, or to ask for a paper copy of any document after signing, contact Ada Admin at help@example.com. A paper copy is free unless Ada Admin tells you otherwise before you ask."},{"heading":"Withdrawing your agreement","text":"You can withdraw this agreement at any time before you sign by declining or by telling Ada Admin at help@example.com. Withdrawing does not undo a signature you already gave."},{"heading":"What you need","text":"A current web browser and a device that can open and save PDF files. You will receive the signed document by email, so keep your email address up to date with the sender. Download and keep the signed copy: it is your record."},{"heading":"This agreement covers","text":"This document and the notices about it that are sent to you through this site."}],"statement":"I have read the disclosure above, I can open and save PDF files on this device, and I agree to use electronic records and signatures for this document.","version":"2026-11-13"},"declineUrl":"/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/decline","documentUrl":"/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/document","envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","envelopeTitle":"Office lease","pageCount":1,"pages":[{"id":"5a9e688b-6f5a-42a6-a76e-f385be74e51d","envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","pageNumber":1,"widthPt":612,"heightPt":792}],"part11":null,"senderName":"Ada Admin","signer":{"email":"riley.recipient@example.com","id":"6543ed57-8dfe-4a28-b3a6-be2d4c813651","name":"Riley Recipient","order":1},"state":"ready","submitUrl":"/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/submit","visibleFields":[]}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary "{\"clientTimezoneOffsetMinutes\":0,\"fields\":[{\"fieldId\":\"01563c48-218e-45a5-a217-f5c6228eaff0\",\"inputMethod\":\"typed\",\"type\":\"signature\",\"value\":\"Riley Recipient\"}]}" http://localhost:3000/api/signing/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/submit
+HTTP/1.1 200 OK
+cache-control: private, no-store
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-robots-tag: noindex, nofollow
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"b912ebe6-f43d-4d26-bff1-f682d491bb98","redirectPath":"/sign/v9W1jkJ1r536HhLOBCBcl1Ku0pSvsnKVx7M7_444pCo/done?title=Office+lease","submittedAt":1794618937}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PATCH -H "Content-Type: application/json" --data-binary "{\"name\":\"Should Fail\"}" http://localhost:3000/api/envelopes/b912ebe6-f43d-4d26-bff1-f682d491bb98/signers/6543ed57-8dfe-4a28-b3a6-be2d4c813651
+HTTP/1.1 409 Conflict
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"This person has already signed and cannot be corrected."}
+exit 0
+
+
+# Part 11 envelope refuses correction
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PUT -H "Content-Type: application/json" --data-binary {"enabled":true} http://localhost:3000/api/admin/part11
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"part11Mode":true}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X GET http://localhost:3000/api/admin/people
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"administratorCount":1,"people":[{"closing":false,"createdAt":"2026-11-14T01:14:14.575Z","email":"ada.admin@example.com","emailVerified":true,"hasOpenPart11Signing":false,"id":"8VQibnvwiLZUgWVkV6qa8E27Z2K72n7d","identityVerificationNote":null,"identityVerifiedAt":null,"name":"Ada Admin","role":"admin","signingLockedAt":null}],"total":1,"you":"8VQibnvwiLZUgWVkV6qa8E27Z2K72n7d"}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary "{\"action\":\"verify\",\"note\":\"Photo identification checked in person at the office.\"}" http://localhost:3000/api/admin/people/8VQibnvwiLZUgWVkV6qa8E27Z2K72n7d/part11
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"administratorCount":1,"people":[{"closing":false,"createdAt":"2026-11-14T01:14:14.575Z","email":"ada.admin@example.com","emailVerified":true,"hasOpenPart11Signing":false,"id":"8VQibnvwiLZUgWVkV6qa8E27Z2K72n7d","identityVerificationNote":"Photo identification checked in person at the office.","identityVerifiedAt":1794618937,"name":"Ada Admin","role":"admin","signingLockedAt":null}],"total":1,"you":"8VQibnvwiLZUgWVkV6qa8E27Z2K72n7d"}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -F "title=Batch record" -F file=@/tmp/correct-signer-demo/sample.pdf;type=application/pdf;filename=batch-record.pdf http://localhost:3000/api/envelopes
+HTTP/1.1 201 Created
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd","pageCount":1,"redirectPath":"/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/signers","sourcePdfFilename":"batch-record.pdf","sourcePdfSizeBytes":916,"title":"Batch record"}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PUT -H "Content-Type: application/json" --data-binary "{\"signers\":[{\"email\":\"ada.admin@example.com\",\"name\":\"Ada Admin\",\"signOrder\":1,\"signatureMeaning\":\"approval\"}]}" http://localhost:3000/api/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/signers
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"copyRecipients":[],"envelopeId":"cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd","redirectPath":"/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/prepare","signers":[{"email":"ada.admin@example.com","id":"0c182575-4524-4f7e-94f8-af1d61205fdc","hasAccessCode":false,"name":"Ada Admin","requireEmailCode":false,"signatureMeaning":"approval","signOrder":1}],"updatedAt":1794618937}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PUT -H "Content-Type: application/json" --data-binary {"fields":[{"height":0.08,"page":1,"required":true,"signerId":"0c182575-4524-4f7e-94f8-af1d61205fdc","type":"signature","width":0.28,"x":0.12,"y":0.72}]} http://localhost:3000/api/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/fields
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd","fields":[{"id":"1395179d-ea0e-4ad5-86f7-4fd57e5eae36","envelopeId":"cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd","signerId":"0c182575-4524-4f7e-94f8-af1d61205fdc","type":"signature","page":1,"x":0.12,"y":0.72,"width":0.28,"height":0.08,"required":true}],"redirectPath":"/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/review","updatedAt":1794618937}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X POST -H "Content-Type: application/json" --data-binary {"expiresInDays":7,"permittedUseConfirmed":true} http://localhost:3000/api/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/send
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"envelopeId":"cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd","expiresAt":1795223737,"notifiedSignerName":"Ada Admin","redirectPath":"/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd","sentAt":1794618937}
+exit 0
+
+$ curl -sS -D - -b /tmp/correct-signer-demo/cookies.txt -c /tmp/correct-signer-demo/cookies.txt -H "Origin: http://localhost:3000" -X PATCH -H "Content-Type: application/json" --data-binary {"email":"someone.else@example.com"} http://localhost:3000/api/envelopes/cb3ba6fa-dc9b-4318-b9b4-2b69c964b8dd/signers/0c182575-4524-4f7e-94f8-af1d61205fdc
+HTTP/1.1 409 Conflict
+content-security-policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: DENY
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+cache-control: private, no-store
+content-type: application/json
+Date: Sat, 14 Nov 2026 01:15:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"This envelope was sent in Part 11 mode. The signer's identity is bound to their account and cannot be corrected."}
+exit 0
+
+
+# Copy outbox files into the demo folder
+
+copied 1794618854961-capture-0505a4dc-17be-41a1-94e0-f661584ab173.json
+copied 1794618854987-capture-6b2eeee4-4a6d-4c72-ba06-e26ddf9c2972.json
+copied 1794618937354-capture-2dff622a-65a1-41a1-b44a-e0f6b081d963.json
+copied 1794618937463-capture-d4435f3a-9ee9-4dff-b8f5-736f6b5f822e.json
+
+# demo complete
