@@ -1,0 +1,48 @@
+# out.mp4
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'out.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.16.100
+  Duration: 00:00:35.80, start: 0.000000, bitrate: 613 kb/s
+  Stream #0:0[0x1](eng): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 610 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc60.31.102 libx264
+
+ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames,nb_frames,width,height,avg_frame_rate,r_frame_rate,codec_name,pix_fmt,duration -of default out.mp4
+[STREAM]
+codec_name=h264
+width=1920
+height=1080
+pix_fmt=yuv420p
+r_frame_rate=30/1
+avg_frame_rate=30/1
+duration=35.800000
+nb_frames=1074
+nb_read_frames=1074
+[/STREAM]
+
+# preview.gif
+Input #0, gif, from 'preview.gif':
+  Duration: 00:00:35.84, start: 0.000000, bitrate: 517 kb/s
+  Stream #0:0: Video: gif, bgra, 960x540 [SAR 64:64 DAR 16:9], 6.25 fps, 6 tbr, 100 tbn
+
+ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames,nb_frames,width,height,avg_frame_rate,r_frame_rate,codec_name,pix_fmt,duration -of default preview.gif
+[STREAM]
+codec_name=gif
+width=960
+height=540
+pix_fmt=bgra
+r_frame_rate=6/1
+avg_frame_rate=25/4
+duration=35.840000
+nb_frames=215
+nb_read_frames=215
+[/STREAM]
+
+stat -c '%s %n' out.mp4 preview.gif
+2744415 out.mp4
+2320448 preview.gif
