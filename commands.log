@@ -1,0 +1,839 @@
+# commands.log — bulk send from a CSV
+# Working tree: feat/bulk-send-template at f38178ff077e628fa27fc1af1d6d54ce038a6b84
+# Node v24.22.3, npm 11.19.1
+
+================================================================================
+$ npm run typecheck
+
+> signudoc@0.2.1 typecheck
+> next typegen && tsc --noEmit --incremental false
+
+Generating route types...
+✓ Types generated successfully
+EXIT:0
+
+================================================================================
+$ npm run lint
+
+> signudoc@0.2.1 lint
+> eslint .
+
+
+/agent/repos/SignuDoc/src/components/envelopes/prepare-live-shell.tsx
+  466:3  warning  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/agent/repos/SignuDoc/src/components/envelopes/prepare-live-shell.tsx:466:3
+  464 |   }));
+  465 |
+> 466 |   currentFieldsRef.current = fields;
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  467 |
+  468 |   const pageCount = record.pages.length;
+  469 |   const pageFields = fields.filter((field) => field.page === activePage);                                                                                                                                                                                                                                                                                                                                                                       react-hooks/refs
+  522:5  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/agent/repos/SignuDoc/src/components/envelopes/prepare-live-shell.tsx:522:5
+  520 |     let localDocumentUrl: string | null = null;
+  521 |
+> 522 |     setPreferredDocumentUrl(null);
+      |     ^^^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  523 |
+  524 |     async function resolvePreferredDocumentUrl() {
+  525 |       try {  react-hooks/set-state-in-effect
+  605:5  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/agent/repos/SignuDoc/src/components/envelopes/prepare-live-shell.tsx:605:5
+  603 |     }
+  604 |
+> 605 |     setIsDocumentPanning(false);
+      |     ^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  606 |     documentPanGestureRef.current = null;
+  607 |   }, [zoomLevel]);
+  608 |                                                   react-hooks/set-state-in-effect
+  657:3  warning  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/agent/repos/SignuDoc/src/components/envelopes/prepare-live-shell.tsx:657:3
+  655 |   }
+  656 |
+> 657 |   persistFieldsRef.current = persistFields;
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  658 |
+  659 |   useEffect(() => {
+  660 |     const nextSignature = serializeFieldRequest(fields);                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/refs
+  679:5  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/agent/repos/SignuDoc/src/components/envelopes/prepare-live-shell.tsx:679:5
+  677 |     }, autosaveDelayMs);
+  678 |
+> 679 |     setSaveState("saving");
+      |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  680 |
+  681 |     return () => {
+  682 |       if (autosaveTimeoutRef.current) {                                               react-hooks/set-state-in-effect
+
+✖ 5 problems (0 errors, 5 warnings)
+
+EXIT:0
+
+================================================================================
+$ npm run format:check
+
+> signudoc@0.2.1 format:check
+> prettier --check .
+
+Checking formatting...
+[warn] .tmp-demo-out/storage.json
+[warn] .tmp-record-bulk-send.mjs
+[warn] public/pdfjs/5.5.207/legacy/build/pdf.worker.min.mjs
+[warn] src/app/api/envelopes/[id]/document/route.ts
+[warn] src/app/api/envelopes/[id]/nudge/route.ts
+[warn] src/app/api/envelopes/[id]/route.ts
+[warn] src/components/auth/signup-shell.tsx
+[warn] src/components/contact/contact-form.tsx
+[warn] src/components/envelopes/interactive-placed-field.tsx
+[warn] src/components/envelopes/prepare-live-shell.tsx
+[warn] src/lib/account.ts
+[warn] src/lib/auth/route-session.ts
+[warn] src/lib/draft-pdf-cache.ts
+[warn] src/lib/pdfjs-client.ts
+[warn] src/lib/utils/pdf-coords.ts
+[warn] tsconfig.json
+[warn] Code style issues found in 16 files. Run Prettier with --write to fix.
+EXIT:1
+
+$ npx prettier --check <changed product files>
+Checking formatting...
+All matched files use Prettier code style!
+EXIT:0
+
+================================================================================
+$ npm test
+
+> signudoc@0.2.1 test
+> node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test "src/**/*.test.ts" "db/**/*.test.mjs"
+
+✔ migrations prefer the direct URL that belongs to the URL in use (1.040271ms)
+✔ an unpooled URL alone is not enough for the app (0.139104ms)
+✔ TLS settings are made explicit (1.017577ms)
+✔ the password is read decoded (0.175215ms)
+✔ normalizeBrandColor accepts plain hex colors only (0.691403ms)
+✔ a color that is already readable is kept as it is (0.347015ms)
+✔ every palette is readable, whatever color it starts from (6.32243ms)
+✔ a light color is darkened rather than refused (0.207261ms)
+✔ buildBrandColorCss writes one rule made only of colors (0.29991ms)
+✔ the default palette is the one the stylesheet ships with (3.945783ms)
+✔ the kind of image is read from the bytes (0.670499ms)
+✔ anything else is not a logo, SVG and HTML included (0.379091ms)
+✔ an empty or oversized upload is refused with a reason (0.189869ms)
+✔ quoted commas, doubled quotes, CRLF and a UTF-8 BOM are read as they were written (1.131569ms)
+✔ a one-signer CSV uses name and email, or the role's columns, and title is optional (0.412596ms)
+✔ a multi-role CSV names each role's columns, and the example round-trips (0.370929ms)
+✔ the header is refused when a signer's columns are missing (0.121213ms)
+✔ a missing name, a bad email, a duplicate row and a duplicate address are skipped (1.143776ms)
+✔ a title that is too long is skipped, and a copy recipient's address cannot also sign (0.625662ms)
+✔ the 201st row is skipped and the first 200 stay (3.266357ms)
+✔ a results CSV records each row without turning a cell into a formula (0.775215ms)
+✔ the button copies this repository and pre-fills its name (0.712275ms)
+✔ the button creates the database, the private file store and email (0.599397ms)
+✔ the agent deploy guide opens the same link as the button (0.266437ms)
+✔ the button asks for nothing to be typed in, and carries no values (0.138227ms)
+✔ the button's demo card is complete and its picture is in the repository (0.81725ms)
+✔ every picture and page the README and the guides link to is in the repository (1.038183ms)
+✔ the capture driver is reported as such without asking anyone (1.392455ms)
+✔ no Resend key means email is not connected (0.27312ms)
+✔ Resend's test address is reported without asking Resend about domains (0.379617ms)
+✔ a sender address in the environment is the one that is checked (0.444029ms)
+✔ a domain Resend has not heard of needs setting up (0.275721ms)
+✔ setting the domain up adds it to Resend and returns the DNS records to add (0.3411ms)
+✔ setting up a domain that is already there shows its records instead of adding it twice (0.853106ms)
+✔ a domain whose records are not verified yet is pending, with its records (0.179121ms)
+✔ a verified domain means email is working, and that is recorded (0.582567ms)
+✔ checking again asks Resend to verify, then reads the result (0.919676ms)
+✔ a check that Resend refuses to start is reported, not passed off as still waiting (0.4228ms)
+✔ a domain beyond the first page of a large Resend account is still found (0.325747ms)
+✔ a domain is only called missing once every page has been read (0.185221ms)
+✔ a key that may only send points the administrator at Resend instead (0.163878ms)
+✔ a refusal that is not about what the key may do is shown, not blamed on the key (0.130015ms)
+✔ a key without the scope to read domains counts as a send-only key (0.068109ms)
+✔ a domain that can send is ready even while Resend still waits on receiving (0.128164ms)
+✔ a partly verified domain whose sending records are not all in is neither marked ready nor unmarked (0.100671ms)
+✔ any other failure is reported in Resend's own words (0.220594ms)
+✔ a request turned away for going too fast is tried once more (1101.340203ms)
+✔ the administrator is told about email until it has been seen working (0.242803ms)
+✔ RESEND_REGION picks a known Resend region and ignores anything else (0.077521ms)
+✔ a deadline is a whole number of days from now, thirty by default (0.555331ms)
+✔ only whole days from 1 to 365 are accepted (0.135973ms)
+✔ only an envelope out for signature can be expired (0.116836ms)
+✔ a signing link lives until the envelope's deadline (0.429253ms)
+✔ the next signer's link ends at the envelope's deadline (0.116212ms)
+✔ a deadline is written out in full, in UTC (0.110056ms)
+✔ an editor box shows what was typed only while it still stands for what is saved (0.702297ms)
+✔ a number field takes plain and comma-grouped numbers and nothing else (0.276405ms)
+✔ choices are read one per line, without blanks or repeats (0.738856ms)
+✔ a dropdown needs two choices and a radio button needs company (0.299225ms)
+✔ a group of radio buttons counts as one thing to do (2.19743ms)
+✔ what a signer enters must be a number, or one of the choices offered (0.189339ms)
+✔ radio buttons are judged a group at a time (0.217378ms)
+✔ a sender fixed by the environment, display name and all, does not block saving the rest (3.038728ms)
+✔ a support address fixed by the environment is not judged or changed either (0.447697ms)
+✔ the support address can be changed, but not taken away (1.779094ms)
+✔ an install whose support address comes from SUPPORT_EMAIL needs none of its own (0.299314ms)
+✔ an address the administrator can edit is still checked (0.347139ms)
+✔ what is left in the hidden domain field does not block closing or opening sign-up (0.286255ms)
+✔ under the domain rule the list is checked and saved (0.463679ms)
+✔ the brand color is stored as #rrggbb however it was typed, and empty clears it (1.04332ms)
+✔ something that is not a color is refused (0.785417ms)
+✔ the hosted service keeps its own color whatever the form sends (0.276564ms)
+✔ the manifestation gives the name, the UTC time and the meaning (0.81312ms)
+✔ only the four Part 11 meanings parse (0.142976ms)
+✔ a CSV cell never runs as a spreadsheet formula and quotes are escaped (0.283654ms)
+✔ a send is refused for each missing Part 11 condition, in order (0.232725ms)
+✔ a signer bound to an account must pass the account check first (0.624628ms)
+✔ the install audit hash changes when any field or the previous hash does (0.587318ms)
+✔ nothing in the repository points at a site or a mailbox run by the project (22.48591ms)
+✔ security reports go through GitHub, not to an email address (0.41373ms)
+✔ with no secret configured, anyone may ask and nobody is trusted (0.771027ms)
+✔ with CRON_SECRET set, only a caller that presents it gets in (0.497716ms)
+✔ RETENTION_JOB_SECRET closes the route the same way, as it always did (0.16143ms)
+✔ Vercel's cron being refused for want of CRON_SECRET is recognized (0.13381ms)
+✔ with both set, either secret works (0.161627ms)
+✔ a template needs a name, and its signers need different names (3.392552ms)
+✔ using a template takes a title and one person for each signer (0.977394ms)
+✔ the doors a script would knock on are the protected ones (1.078954ms)
+✔ turned off, nothing is checked (16.208732ms)
+✔ turned on, a person is let through and a bot gets a 403 the forms can show (2.69661ms)
+✔ requests outside the list are not checked even when it is on (0.347999ms)
+✔ a check that fails or never answers lets the request in rather than locking everyone out (21.159962ms)
+✔ in memory, requests up to the limit are allowed and the next is not (1.170307ms)
+✔ in memory, the wait shrinks as the window runs out and trying again does not extend it (0.185244ms)
+✔ in memory, each key has its own count (0.165123ms)
+✔ the database's count decides, and only a hash of the key is sent to it (0.640201ms)
+✔ a count within the limit is allowed (0.307098ms)
+✔ when the database cannot be used the limit is still enforced, from memory (0.615111ms)
+✔ on Vercel, the address Vercel wrote wins over one the visitor could have sent (16.3264ms)
+✔ off Vercel, Vercel's header means nothing and the proxy headers are used (0.172864ms)
+✔ an empty header is passed over, and no header at all gives no address (0.147816ms)
+✔ only a domain an organization could own is offered for sending (0.786615ms)
+✔ the root domain comes from the site's custom domain, cut back to the email domain (0.20738ms)
+✔ on a vercel.app address the emails decide, skipping public mailboxes (0.098848ms)
+✔ a subdomain is tidied up, and an empty one means the root domain (0.180998ms)
+✔ the parts make one address, with sign. in front by default (1.295369ms)
+✔ no domain means deciding later, and bad parts name their field (0.163095ms)
+✔ the domain the Resend integration set up is used as it is (0.135503ms)
+✔ a user gets a signed upload URL limited to one PDF in their own folder (12.193294ms)
+✔ upload destinations outside the user's own pending folder are refused (1.215721ms)
+✔ multipart uploads and other event types are refused (1.969261ms)
+✔ before a domain is set up, mail goes out from Resend's test address under the organization's name (1.074998ms)
+✔ the organization's own address gets its name in front (0.154518ms)
+✔ a sender that already carries a display name is left alone (0.130426ms)
+✔ characters that mean something in an email header are dropped from the name (0.747456ms)
+✔ an install with no name, and the hosted service, send as SignuDoc (0.126415ms)
+✔ the capture driver's fallback address is used when one is given (0.075807ms)
+✔ the bare address and its domain can be read back out (0.178782ms)
+✔ Resend's test address is recognized with or without a display name (0.079971ms)
+✔ the hosted service links to its own terms, privacy and contact pages (0.993718ms)
+✔ a neutral install with nothing else set links its signer privacy notice and says who sent the message (0.157777ms)
+✔ a neutral install links to the organization's own pages and support address (0.133319ms)
+✔ an install that has not been named yet does not invent a name (0.159797ms)
+✔ the organization's name and links are escaped in the HTML part (0.173482ms)
+✔ a neutral install with no links does not need to know its own URL (0.180253ms)
+✔ an install with a logo puts it at the top of the HTML part only (0.166964ms)
+✔ without the site's address there is nowhere to fetch a logo from (0.086777ms)
+✔ a message Resend turns away for rate is sent again after the wait it names (1.178155ms)
+✔ a rate limit that does not clear is reported after a few tries (0.378133ms)
+✔ the wait is a second when Resend names none, and is never long (0.149425ms)
+✔ a used-up quota is reported at once: waiting a second does not bring it back (0.145954ms)
+✔ a batch turned away for rate is sent again too (0.189048ms)
+✔ the signed PDF stamps values in any of the supported scripts (444.100264ms)
+✔ the certificate prints names, titles and browser strings as they are (95.611467ms)
+✔ the certificate names the people who were sent a copy (155.438848ms)
+✔ numbers and dropdown choices are stamped as text, radio buttons as rings (209.582009ms)
+✔ toDrawableText keeps one line of visible characters (0.783903ms)
+✔ collectCodePoints walks every string in a value (0.595495ms)
+✔ text outside Windows-1252 is drawn and can be read back (431.283178ms)
+✔ a mixed line is split into runs, one per font (12.698584ms)
+A font could not be subset for a PDF: Error: no subsetter
+    at subset (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.test.ts:138:13)
+    at embed (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.ts:485:43)
+    at embedTextFaces (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.ts:497:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.test.ts:136:17)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+A font could not be subset for a PDF: Error: no subsetter
+    at subset (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.test.ts:138:13)
+    at embed (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.ts:485:43)
+    at embedTextFaces (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.ts:501:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/services/pdf-fonts.test.ts:136:17)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ a character no font has becomes U+FFFD instead of failing (20.266096ms)
+✔ without a subsetter whole Latin fonts are embedded and CJK is left out (153.05713ms)
+✔ a CA-issued seal gets its chain, OCSP answers and an archive timestamp (B-LTA) (548.283561ms)
+✔ without OCSP, the revocation list is used (527.037715ms)
+✔ a revoked seal certificate is reported (299.066325ms)
+✔ adding the same validation data twice changes nothing (312.22163ms)
+✔ a time-stamping service that fails leaves the validation data in place (412.517375ms)
+✔ the timestamp tokens and certificates inside a seal are found (342.338904ms)
+✔ addresses on this machine or a private network are not fetched (1.146554ms)
+✔ the install's seal is B-LTA with a CA certificate and a time-stamping service (307.839674ms)
+✔ with the time-stamping service down, a CA seal still gets its validation data (354.918181ms)
+✔ a self-made seal without a timestamp is left as it is (76.625123ms)
+✔ a certificate authority that does not answer is given up on in time (613.235656ms)
+✔ each redirect counts against the document's lookups (2.982781ms)
+✔ a lookup told to stop closes its connection (111.399558ms)
+✔ an answer without a next update is kept only while it is current (1953.082698ms)
+✔ one lookup budget covers the whole document, archive timestamp included (730.155584ms)
+✔ a redirect's body is not read (4.820426ms)
+✔ a host name that resolves to a private address is not fetched (348.8803ms)
+✔ an OCSP answer from a responder the CA authorized is used (429.589545ms)
+✔ an OCSP answer signed by another of the CA's certificates is refused (321.962973ms)
+✔ out-of-date revocation answers are refused (275.753162ms)
+✔ revocation lists that may leave a certificate out are refused (2086.423445ms)
+✔ revocation answers dated in the future are refused (256.827599ms)
+✔ each signer's revision keeps the signatures before it valid (861.301243ms)
+✔ a signature for other content, or by another key, is refused (505.477344ms)
+✔ a qualified signature needs a qualified certificate (442.287592ms)
+✔ a signature timestamp counts only when it is for the signature and verifies (463.965052ms)
+✔ raw ECDSA r and s are encoded, even when they start like a SEQUENCE (0.903588ms)
+✔ a certificate matches the name a signer was sent the document under (576.295292ms)
+✔ an RSA-PSS signature is checked only with a mask it says it uses (379.087214ms)
+✔ the signature slot fits a chain and a timestamp (0.090798ms)
+✔ a sealed PDF verifies, and any change to it is detected (158.373105ms)
+✔ a timestamp token from the service is stored with the signature (90.714415ms)
+✔ a timestamp token for some other request is refused (73.123484ms)
+✔ a PKCS#12 bundle from a certificate authority can be used (84.243344ms)
+✔ a pending upload is read back in full (2.489688ms)
+✔ only the user's own pending uploads can be read (0.468662ms)
+✔ an oversized upload is refused, whatever size the storage reports (0.41593ms)
+✔ a pending upload that is gone asks the user to upload again (0.145285ms)
+✔ discarding deletes the upload and never throws (0.169842ms)
+✔ an automatic reminder is due half a day before its interval is up (0.561641ms)
+✔ the interval counts from the last invitation or reminder of any kind (0.113326ms)
+✔ a signer who was never written to gets no reminder (0.078555ms)
+✔ an interval is named the way a person would say it (0.087802ms)
+✔ eID Easy signs the revision's hash in one redirect (420.63135ms)
+✔ a signer who cancels at eID Easy gets no signature (456.287261ms)
+✔ wrong eID Easy credentials are reported (368.667511ms)
+✔ a CSC provider signs after the signer chooses a certificate and authorizes the hash (390.370071ms)
+✔ for a qualified signature the CSC provider uses the signer's qualified certificate (516.223719ms)
+✔ a signer who cancels at the CSC provider is told where it stopped (366.679998ms)
+✔ the provider comes from the environment (0.394945ms)
+✔ the picture sits beside the original (0.624187ms)
+✔ the picture stays where the files are when the envelope changes hands (0.131418ms)
+✔ an original in a shared folder does not share its picture (0.108939ms)
+✔ a template's document is kept apart from every envelope's (0.117277ms)
+✔ objects are written privately, without a random suffix, and replace what was there (1.304362ms)
+✔ an object that is to be kept is not written over (0.37609ms)
+✔ a write that fails with nothing stored is still a failure (0.405123ms)
+✔ the local store keeps the first object too, and keeps it whole (17.31956ms)
+✔ objects are read back whole or as a stream, bypassing the cache (8.289685ms)
+✔ a missing object is reported the way the rest of the app expects (0.183628ms)
+✔ head and delete work on stored objects (0.141798ms)
+✔ keys that could escape their folder are refused (0.096385ms)
+✔ without a connected Blob store the driver says what is missing (0.119695ms)
+✔ the storage driver is chosen from what is connected (0.198215ms)
+✔ reads the size of a baseline JPEG (1.095591ms)
+✔ reads the size of a progressive JPEG (0.130548ms)
+✔ skips tables and padding that come before the frame header (0.135152ms)
+✔ does not accept other kinds of file (0.21086ms)
+✔ does not accept a JPEG that never says how large it is (0.140557ms)
+✔ accepts a thumbnail of a usable size (0.1969ms)
+✔ refuses a thumbnail that is empty, too heavy, or not a JPEG (0.379978ms)
+✔ refuses a thumbnail that was cut short (0.138659ms)
+✔ refuses a thumbnail whose picture is too large or too small (0.151444ms)
+✔ a thumbnail's name is the same every time, and its own (0.242543ms)
+✔ a name the browser quotes back is recognized (0.209407ms)
+✔ an install with no settings row behaves as it did before settings existed (0.811075ms)
+✔ stored settings are used as they are when the environment says nothing (0.110886ms)
+✔ email addresses set in the environment win over the stored ones (0.128688ms)
+✔ hosted mode is switched on by HOSTED_MODE (0.147952ms)
+✔ a neutral install goes by the organization's name and links (0.67647ms)
+✔ a neutral install with no name yet goes by SignuDoc and has no legal links (0.105802ms)
+✔ hosted mode keeps SignuDoc's own name and pages whatever is stored (0.098795ms)
+✔ sign-up is offered only when someone could actually sign up (0.125361ms)
+✔ a missing table or column is recognized, other failures are not (0.151201ms)
+✔ a neutral install carries its own color and logo, hosted mode never does (0.3136ms)
+✔ a stored color that is not one is ignored rather than put on a page (0.145615ms)
+✔ a set-up install has nothing to show on the setup page (1.179086ms)
+✔ a database without this version's tables says so (0.189117ms)
+✔ the first visitor to a fresh install creates the administrator (0.110374ms)
+✔ a fresh install with SETUP_TOKEN asks for it (0.100325ms)
+✔ an install with accounts but no administrator is claimed by someone signed in (0.13544ms)
+✔ setup asks for a support address unless the install or the deployment has one (0.237982ms)
+✔ setup refuses input it cannot use before touching the database (2.426624ms)
+✔ a new install's form is told about every field at once, the account's included (0.722794ms)
+✔ runs one job at a time, in the order they were asked for (3.937449ms)
+✔ gives everyone who asks for the same key the same job (0.438559ms)
+✔ drops a waiting job once nobody wants it, and moves on (0.830346ms)
+✔ keeps a waiting job while at least one caller still wants it (0.38025ms)
+✔ finishes a job that has started even if its caller leaves (0.288049ms)
+✔ a job that fails does not hold up the ones behind it (0.36984ms)
+✔ asking again after a job has finished starts a new one (0.45491ms)
+✔ an access code matches regardless of case and spaces, and nothing else does (111.344741ms)
+✔ an emailed code is six digits and checks against its hash (0.732422ms)
+✔ the verification cookie is bound to its link and expires (0.730829ms)
+✔ a cookie whose method list was edited is rejected (0.166545ms)
+✔ required checks follow the signer's settings (0.132717ms)
+✔ cookie and address helpers (0.151566ms)
+✔ a domain is tidied up, and anything else is turned away (0.780528ms)
+✔ the domain of an address is whatever follows the last @ (0.120348ms)
+✔ a typed list of domains is split, cleaned and de-duplicated (0.726116ms)
+✔ a new install starts with the administrator's own domain (0.169221ms)
+✔ a public mailbox domain does not open the install to everyone at it (0.152349ms)
+✔ open sign-up takes anyone (0.11183ms)
+✔ domain sign-up takes addresses at the listed domains and no others (0.870536ms)
+✔ closed sign-up takes nobody, and so does a domain rule with no domains (0.14465ms)
+✔ the rule is described in one sentence (0.121461ms)
+✔ versions compare by number, and a pre-release comes first (2.018804ms)
+✔ the running version and commit come from the build (0.240848ms)
+✔ the deploy repository comes from Vercel's git variables (0.794018ms)
+✔ no deploy repository off GitHub, or with odd names (0.16816ms)
+✔ a preview deployment still points at main, and upstream is recognised (0.206436ms)
+✔ release info is read from GitHub's answer (0.256049ms)
+✔ a newer release is an update, and the answer is cached (17.545755ms)
+✔ the same release is not an update (0.349478ms)
+✔ failures are reported, not thrown, and retried sooner (0.622721ms)
+✔ a Deploy-button copy gets a pull request with the new release (148.172381ms)
+✔ without a token, workflow files are left alone and listed (133.415237ms)
+✔ with a token, workflow files are updated too (128.002605ms)
+✔ the deployer's own changes are kept (141.607182ms)
+✔ a first commit that matches no release still finds its base (141.940049ms)
+✔ a clash stops the run and names the files (108.369366ms)
+✔ once the pull request is merged, the next run is up to date (186.424642ms)
+✔ adding the token later brings in the workflow files that were left (311.093615ms)
+✔ workflow files left behind do not block the next release (360.559442ms)
+✔ an unclear starting point stops, and based_on settles it (161.185034ms)
+✔ a copy that is already on the latest release is up to date (89.052507ms)
+✔ merge-now pushes straight to the production branch (122.928305ms)
+✔ a version that is not a release is refused (55.191884ms)
+✔ a fresh Vercel install resolves everything from what Vercel provides (1.306443ms)
+✔ a preview deployment uses its own branch URL (0.547872ms)
+✔ explicit settings win over the Vercel defaults (0.149763ms)
+✔ placeholders from .env.example count as not set (0.118599ms)
+✔ the derived secret is stable and follows the database password (0.252709ms)
+✔ a weak database password is not used to derive a production secret (0.172374ms)
+✔ production rejects a short secret and a plain HTTP public URL (0.340641ms)
+✔ a production build may run on localhost, but not on Vercel (0.150723ms)
+✔ Supabase's POSTGRES_URL is used when DATABASE_URL is not set (0.20616ms)
+ℹ tests 289
+ℹ suites 0
+ℹ pass 289
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12137.076206
+EXIT:0
+
+================================================================================
+$ npm run test:db
+
+> signudoc@0.2.1 test:db
+> node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --test-concurrency=1 "src/**/*.dbtest.ts"
+
+Moved finished envelopes from closed account 29bbca3c-0660-495a-ad7c-89c208ef5db9 to e22228e4-a5c7-4fab-b2ef-e6f57f0b2d34.
+✔ an envelope completed while its sender's account is being deleted goes to an administrator (42.508855ms)
+✔ once the finished envelopes are handed over, no other envelope of the account can be completed (11.596534ms)
+Retention cleanup failed for account 535faa31-a9ef-485c-87c9-8ff1223492c7: AccountPurgeDeferredError: Account 535faa31-a9ef-485c-87c9-8ff1223492c7 holds finished envelopes and no other user can keep them. Its purge is deferred until another administrator exists or the records are exported and deleted by hand.
+    at deleteAccountRows (file:///agent/repos/SignuDoc/src/lib/retention.ts:591:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async withTransaction (file:///agent/repos/SignuDoc/src/lib/db/connection.ts:89:20)
+    at async purgeQueuedAccount (file:///agent/repos/SignuDoc/src/lib/retention.ts:649:7)
+    at async runRetentionSweep (file:///agent/repos/SignuDoc/src/lib/retention.ts:997:23)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/account-purge.dbtest.ts:245:21)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ with no administrator to take it, an envelope completed during the deletion keeps its account (8.167317ms)
+✔ the daily job reminds the waiting signer once per interval (50.764819ms)
+✔ no reminder when they are off, the deadline passed, or nobody is waiting (7.922546ms)
+Automatic reminder failed for envelope f9a7f002-92ac-4230-9399-c3d1d9fdc2bb: Error: mail is down
+    at TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/automatic-reminders.dbtest.ts:246:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ a reminder whose email fails leaves the signer's link as it was (10.791918ms)
+Automatic reminder failed for envelope 27151b6e-4ba8-488d-938b-177cf0553959: Error: mail is down
+    at TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/automatic-reminders.dbtest.ts:273:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ a deadline moved while a reminder's email fails stays moved (8.352921ms)
+✔ a reminder and a signer opening the page do not lock each other out (19.901531ms)
+✔ a run that is out of time leaves the rest for the next one (2.430098ms)
+✔ only the owner changes reminders, and only while the envelope is out (34.157935ms)
+✔ a logo is stored, read back and replaced, and its version follows the image (35.15631ms)
+✔ saving the other settings leaves the logo where it is, and the color beside it (3.788157ms)
+✔ removing the logo clears every trace of it (1.708024ms)
+✔ what is not an image never reaches the database (0.947039ms)
+✔ the database itself refuses a color or a logo that is not one (9.632672ms)
+[email:capture] signing_invitation to tess1-70c82c3c-9bea-43d4-8b59-0a8adeb44d06@example.test -> /tmp/signudoc-bulk-send-9bCHI1/outbox/1794856891520-capture-6220d770-fc69-4c03-9f4a-6b5808b3eede.json
+[email:capture] signing_invitation to tess2-fc2a2a4d-c765-4f88-adff-98afb9b273b3@example.test -> /tmp/signudoc-bulk-send-9bCHI1/outbox/1794856891539-capture-19d7e3e9-41a8-423e-a70f-23be5ddcec97.json
+[email:capture] signing_invitation to tess3-eeec0197-9e95-4d3c-887c-90f3bee3dd8a@example.test -> /tmp/signudoc-bulk-send-9bCHI1/outbox/1794856891555-capture-e13a147a-1d06-4f62-92e2-4877d99c7c9c.json
+✔ a 3-row batch creates and sends three envelopes with the template's fields and settings (152.042795ms)
+[email:capture] signing_invitation to ann-44e063fb-5e0f-4261-9956-ff46c3f089d0@example.test -> /tmp/signudoc-bulk-send-9bCHI1/outbox/1794856891593-capture-ae745fc8-a2d3-4a77-adb7-b5ea07c5a018.json
+[email:capture] signing_invitation to cara-d5f42bdf-cdbf-4d2f-84bc-8e1973ec1062@example.test -> /tmp/signudoc-bulk-send-9bCHI1/outbox/1794856891623-capture-54745049-137e-4690-b121-27fd6c433467.json
+✔ a bad row is skipped while the rest send (53.385882ms)
+✔ the cap is enforced without creating envelopes (13.409502ms)
+✔ another user's template is refused (12.171454ms)
+✔ Part 11 mode skips a row whose signer has no verified account (15.120787ms)
+✔ sending without the permitted-use confirmation is refused, and so is an empty CSV (12.723803ms)
+✔ a draft keeps half-finished choices, and sending waits until they can be answered (80.835323ms)
+✔ choices only belong on dropdowns, groups only on radio buttons, and a group holds together (6.987026ms)
+✔ the database itself keeps choices and groups where they belong (16.199337ms)
+✔ copy recipients are saved beside the signers and stay out of the signing order (54.416183ms)
+✔ saving the signers again keeps, replaces or removes the copy recipients (17.909295ms)
+✔ one address cannot be both a signer and a copy recipient (7.063759ms)
+✔ one saved copy recipient named twice is refused, and nothing is lost (4.229157ms)
+✔ the database refuses to put a copy recipient into the signing order (7.021966ms)
+✔ a data request for an address finds the envelopes it was copied on (7.13123ms)
+✔ two renewals at once send one email, and its links are the ones that work (88.263442ms)
+✔ a new link that cannot be stored leaves both old links as they were (36.001736ms)
+✔ when the email does not go out the old links are put back, and the signer can ask again (10.417271ms)
+✔ erasing a signer leaves a row that was given someone else's address meanwhile (59.259257ms)
+✔ erasing a signer takes them off a draft, with their fields (10.602837ms)
+✔ an envelope is not sent without a signer who was erased while it was being sent (18.596249ms)
+✔ fields saved for a draft do not land on an envelope that was sent meanwhile (12.170179ms)
+✔ signers saved for a draft do not land on an envelope that was sent meanwhile (9.452339ms)
+✔ a passed deadline stops signing, and a new one brings the same link back (52.984779ms)
+✔ a link that outlives the envelope's deadline does not work past it (7.633136ms)
+✔ only the owner of an envelope that is out can change its deadline (3.745459ms)
+✔ a reminder is refused once the deadline has passed (2.576047ms)
+✔ the daily job tells the sender once that a deadline passed (17.087955ms)
+Expiry notice failed for envelope 89e9555d-e69c-41f4-b5dd-5f2a83219c9c: Error: mail is down
+    at TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/envelope-deadline.dbtest.ts:355:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ a notice whose email fails is tried again on the next run (5.97748ms)
+✔ nothing is marked as told before the notice has gone out (4.339725ms)
+✔ a deadline moved during the run is not told or noted as passed (6.789406ms)
+✔ a change of deadline and a signer opening the page do not lock each other out (21.294218ms)
+✔ a deadline moved while a signer submits reaches the next signer (17.640486ms)
+[seal] The stored seal key cannot be read with the current auth secret; making a new one.
+✔ a change of deadline and the last signature do not lock each other out (344.300652ms)
+[email:capture] decline_notification to 78658a93-9783-4fdf-ac11-171b2eda6d03@example.test -> /tmp/signudoc-deadline-e4VTsp/outbox/1794856924620-capture-f8a588b7-8ad1-4818-bb04-6b59bd1e926c.json
+✔ a change of deadline and a decline do not lock each other out (61.802137ms)
+✔ a picture is kept for an envelope that exists (37.438854ms)
+✔ a browser that already holds the picture is answered without a read from file storage (9.05718ms)
+✔ an envelope keeps the first picture it is given (5.142292ms)
+✔ quoting a picture's name does not show it to another account (4.302296ms)
+✔ nobody else can store a picture for the envelope (2.092687ms)
+✔ a picture written while its draft is being deleted does not stay behind (3.887245ms)
+✔ deleting a draft removes its picture (4.370197ms)
+✔ a picture stays with an envelope that is handed to another account (7.402871ms)
+✔ a picture stored while a finished envelope is being deleted does not stay behind (3.792024ms)
+✔ the install audit trail is one hash chain that shows a changed row (36.579365ms)
+✔ a right password signs and clears earlier misses (4.258203ms)
+✔ a right password with someone else's email address is a miss (1.901433ms)
+✔ five wrong passwords lock signing, tell the administrators and are audited (9.687961ms)
+✔ a data request does not erase a finished Part 11 envelope (6.187791ms)
+✔ an identity confirmation taken back after send stops the signature (2.345999ms)
+✔ an administrator can be added and removed, but never the last one (41.518237ms)
+✔ two administrators removing each other at once leaves one (6.570537ms)
+✔ a request already under way does not outlive its administrator's role (13.429582ms)
+Moved finished envelopes from closed account 7f45d0d7-4f18-4121-a881-e806e0040b8f to 08562cc7-e16d-46ad-ae54-970580127d2f.
+✔ a closed account's records do not go to someone whose role is being taken away (20.627584ms)
+Moved finished envelopes from closed account 1a651619-c69d-4cae-a7a0-20f95a21ec31 to d2efbf9e-7e70-4c94-95fb-7ebf7d459562.
+Moved 1 handed-over envelopes from d2efbf9e-7e70-4c94-95fb-7ebf7d459562, no longer an administrator, to 219f8a43-fc8b-44b0-9394-d8e399677133.
+✔ records handed over from a closed account move on when their keeper stops being an administrator (11.993109ms)
+Moved finished envelopes from closed account a6c873b0-1d15-483e-9d39-ab9444cfdaf6 to 3f6943ca-1dbe-475f-8bfa-ded0e15baaaf.
+Moved finished envelopes from closed account 3f6943ca-1dbe-475f-8bfa-ded0e15baaaf to dc935e3b-8693-458e-b571-34c89355135d.
+✔ an administrator who closes their account passes on what they were handed (7.680014ms)
+✔ an administrator whose account is closing does not count as the one that stays (3.917913ms)
+✔ only a confirmed account that is staying can become an administrator (3.868035ms)
+✔ an account past the end of the list can still be found and made an administrator (14.204588ms)
+✔ the sender can choose a provider's signature only when the install has one (524.438236ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856926854-capture-781d0325-db54-42ad-a5ac-91c156875bbd.json
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927069-capture-84ca12ea-ada5-49c4-aacb-c567eb3e861d.json
+[seal] Long-term validation is incomplete: OCSP at http://127.0.0.1:34923/ocsp failed: Refused to fetch from a private address (127.0.0.1). The revocation list at http://127.0.0.1:34923/ca.crl failed: Refused to fetch from a private address (127.0.0.1). No revocation information was found for CN=Riley Recipient, O=Harbour & Finch Test CA. OCSP at http://127.0.0.1:34923/ocsp failed: Refused to fetch from a private address (127.0.0.1). The revocation list at http://127.0.0.1:34923/ca.crl failed: Refused to fetch from a private address (127.0.0.1). No revocation information was found for CN=Casey Second, O=Harbour & Finch Test CA.
+[email:capture] completion_notification to 0aeebe02-08db-4015-894a-3b46b8b5f8f1@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927343-capture-32e7b445-48f4-40bd-8b8a-e407efe11b94.json
+[email:capture] completion_notification to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927345-capture-eb470306-e204-4cea-9e6e-927e283af93d.json
+[email:capture] completion_notification to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927346-capture-7d47290f-8a26-4cea-857d-0f953dfcf559.json
+✔ two signers sign with qualified signatures, each in a revision of their own (547.264151ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927392-capture-95ce2e53-28c0-466b-8db0-caebbf2d466c.json
+[signing] eID Easy did not sign: SigningProviderError: eID Easy has no signature for this document. The signer may have cancelled.
+    at Object.resume (file:///agent/repos/SignuDoc/src/lib/services/signing-providers.ts:202:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async resumeProviderSigning (file:///agent/repos/SignuDoc/src/lib/provider-signing.ts:453:12)
+    at async waitForActual (node:assert:646:5)
+    at async strict.rejects (node:assert:769:25)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/provider-signing.dbtest.ts:611:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927591-capture-3a79ac9d-6f29-4907-8c7f-268f2d642aae.json
+✔ a signer who does not finish at the provider can try again (213.37686ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927605-capture-699886f8-30de-42f8-8902-b192c442ea37.json
+✔ a return while another is saving the signature leaves that one to finish (79.674718ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856927685-capture-fd60572c-550f-45ca-b5e2-ecdb1c114870.json
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856928869-capture-5a3ba794-827f-4749-8435-09c86e14158d.json
+✔ the next signer's turn starts when the signer is back from the provider (1198.78051ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856928884-capture-86a8989c-fdbc-4b8f-b587-28033aa867ad.json
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929032-capture-ce692299-3e34-42c8-b7ca-7549e3175103.json
+✔ an ended session keeps no secrets, and the daily cleanup ends abandoned ones (162.546609ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929045-capture-bc832fc8-079a-47b8-9dd9-42542fa12898.json
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929052-capture-cf33ee95-0dc9-4a79-b646-b09ccb5da135.json
+[email:capture] completion_notification to 5c8f508e-cb19-473d-87cf-496ad7765e5a@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929174-capture-c9b755eb-a600-428d-93f3-0807dd1841a4.json
+[email:capture] completion_notification to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929176-capture-fb5f040a-76ba-442d-8e17-294f5b3e2918.json
+[email:capture] completion_notification to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929178-capture-971a5024-ab92-4adc-aa96-f734e6766b57.json
+✔ two submissions by the last signer at once finish the envelope once, and keep its files (146.173877ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929191-capture-ed14dc68-e15e-404c-af00-ce3741ea7ede.json
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929203-capture-191cc0bd-3b82-47c5-844e-9daa8ab6fd58.json
+[email:capture] completion_notification to a89fdf9c-cbc0-4fac-885b-d72058fe6ccf@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929319-capture-54886009-0e26-4971-88d6-7153d4b912ab.json
+[email:capture] completion_notification to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929320-capture-6ff4ddb1-7d8e-4417-babb-9de626e6d76c.json
+[email:capture] completion_notification to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929321-capture-ce8d647f-8be2-4729-8aa5-af498dec8593.json
+✔ the last signature needs no second connection while it holds the envelope (143.057119ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929335-capture-96d0213a-10ca-48d0-8c78-59a6debe2042.json
+Failed to delete the unused signer revision of session 5OvB6jgL8i9fV0fGahyyiXxUE9mVCvVh: Error: Storage is unavailable.
+    at Object.deleteObject (file:///agent/repos/SignuDoc/src/lib/provider-signing.dbtest.ts:918:15)
+    at deleteUnusedProviderRevisions (file:///agent/repos/SignuDoc/src/lib/retention.ts:368:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async endAbandonedProviderSessions (file:///agent/repos/SignuDoc/src/lib/retention.ts:328:3)
+    at async runRetentionSweep (file:///agent/repos/SignuDoc/src/lib/retention.ts:968:42)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/provider-signing.dbtest.ts:925:3)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929475-capture-db3e4267-5d22-446f-bdb0-e3a0590e4833.json
+[seal] Long-term validation is incomplete: OCSP at http://127.0.0.1:34923/ocsp failed: Refused to fetch from a private address (127.0.0.1). The revocation list at http://127.0.0.1:34923/ca.crl failed: Refused to fetch from a private address (127.0.0.1). No revocation information was found for CN=Riley Recipient, O=Harbour & Finch Test CA. OCSP at http://127.0.0.1:34923/ocsp failed: Refused to fetch from a private address (127.0.0.1). The revocation list at http://127.0.0.1:34923/ca.crl failed: Refused to fetch from a private address (127.0.0.1). No revocation information was found for CN=Casey Second, O=Harbour & Finch Test CA.
+[email:capture] completion_notification to adf07a05-0cd2-45e4-8b8c-1893b2173c98@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929643-capture-b93528e5-3dd0-4031-a89f-5ce9c7712fef.json
+[email:capture] completion_notification to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929644-capture-7b441daf-9149-46ad-8e0e-29afd4f9eea2.json
+[email:capture] completion_notification to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929646-capture-a4e03be6-c46e-4912-9cd6-78ca8ac365f4.json
+✔ a revision the cleanup cannot delete is tried again, and the current one is kept (328.561089ms)
+[email:capture] signing_invitation to riley@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929668-capture-4571654d-60df-4181-b969-4dab79747b87.json
+[signing] The provider's signature was refused: SignerNameError: The certificate is in the name of CN=Morgan Other, O=Harbour & Finch Test CA, not Riley Recipient, who this document was sent to.
+    at resumeProviderSigning (file:///agent/repos/SignuDoc/src/lib/provider-signing.ts:495:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async waitForActual (node:assert:646:5)
+    at async strict.rejects (node:assert:769:25)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/provider-signing.dbtest.ts:994:3)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+[email:capture] signing_invitation to casey@example.test -> /tmp/signudoc-provider-RPwPXB/outbox/1794856929893-capture-7fabfd3f-bbca-4221-8bd3-36f13cda9e8f.json
+✔ a certificate in someone else's name does not sign for the invited signer (242.54294ms)
+✔ a caller with no secret gets one run an hour (41.343548ms)
+✔ a caller with the secret is not rationed, and gets the summary (4.50745ms)
+✔ a run clears finished rate limit windows (3.540676ms)
+✔ while one run holds the lock, another steps aside (2.651477ms)
+✔ requests up to the limit pass, the next one waits, and the count starts over when the window ends (35.624502ms)
+✔ only a hash of the key is stored (1.636544ms)
+✔ requests that arrive together are each counted once (17.197104ms)
+✔ each key has its own count (1.031517ms)
+✔ finished windows are cleared and live ones are kept (1.458879ms)
+✔ before setup nobody can sign up, and after it the chosen rule applies (62.000474ms)
+✔ the support address given at setup is saved for this install, not guessed (19.722655ms)
+✔ setup without a support address is refused before any account exists (19.57523ms)
+✔ a deployment that sets SUPPORT_EMAIL is not asked for a support address (20.062996ms)
+✔ someone who takes charge of an older install gives it a support address, unless it has one (22.432887ms)
+✔ while the administrator's account is being created, nobody else can sign up (36.399341ms)
+✔ a setup that fails halfway leaves sign-up closed, not open (18.153407ms)
+✔ submissions that arrive together get one winner, and the rest are turned away at once (41.730225ms)
+✔ an install from before settings existed stays open until it is claimed (25.131282ms)
+✔ a sign-up rule changed a moment ago applies at once (21.212188ms)
+✔ a database that is behind this version still applies its sign-up rule (30.954343ms)
+✔ an email check only vouches for the sender address it was made with (18.974607ms)
+✔ the audit chain verifies, and shows an edited row (40.535486ms)
+✔ a signer's data can be exported, then erased from finished envelopes only (16.880181ms)
+Moved finished envelopes from closed account ed911247-8a4d-4281-9075-77720ed0642f to 2195f4f7-ae26-4f7e-aed7-add1259052fe.
+✔ closing an account hands finished envelopes to an administrator (9.225433ms)
+✔ the retention period warns the sender, then deletes (13.290906ms)
+✔ the retention period never warns about or deletes a Part 11 record (6.070223ms)
+✔ a template keeps the document, the fields and the order, and no one's name (78.003888ms)
+✔ a draft made from a template has the fields on the people named for it (30.170385ms)
+✔ a template belongs to the person who saved it (14.11922ms)
+✔ what a template is given is checked (20.310954ms)
+✔ a draft that cannot be finished is not left half made (22.805978ms)
+✔ the database refuses a template without signers (18.440966ms)
+Failed to delete the document of template de9cdcf3-8d41-418c-8581-661c48931830: Error: storage is down
+    at Object.deleteObject (file:///agent/repos/SignuDoc/src/lib/templates.dbtest.ts:554:13)
+    at deleteTemplate (file:///agent/repos/SignuDoc/src/lib/templates.ts:546:26)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async waitForActual (node:assert:646:5)
+    at async strict.rejects (node:assert:769:25)
+    at async TestContext.<anonymous> (file:///agent/repos/SignuDoc/src/lib/templates.dbtest.ts:558:3)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ a template whose document cannot be deleted is kept, to be deleted again (19.903997ms)
+✔ saves at the same moment cannot pass the most an account may keep (23.421436ms)
+✔ closing the account removes its templates and their documents (21.636659ms)
+✔ a template saved while its account is being deleted leaves no document behind (518.535442ms)
+ℹ tests 120
+ℹ suites 0
+ℹ pass 120
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42684.205889
+EXIT:0
+
+================================================================================
+$ npm run build
+
+> signudoc@0.2.1 build
+> next build
+
+▲ Next.js 16.4.6 (Turbopack)
+- Environments: .env
+✓ Running next.config.ts took 29ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 952ms
+  Running TypeScript ...
+  Finished TypeScript in 6.9s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/36) ...
+  Generating static pages using 3 workers (9/36) 
+  Generating static pages using 3 workers (18/36) 
+  Generating static pages using 3 workers (27/36) 
+✓ Generating static pages using 3 workers (36/36) in 171ms
+Turbopack build encountered 1 warning:
+./src/lib/services/pdf-fonts.ts:71:14
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m69 |[0m
+  [90m70 |[0m   [36mif[0m (!loaded) {
+[33m[1m>[0m [90m71 |[0m     loaded = fs.readFile([33mFONT_PATHS[0m[name]).then((buffer) => {
+  [90m   |[0m              [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m72 |[0m       [36mconst[0m bytes = [36mnew[0m [33mUint8Array[0m(buffer);
+  [90m73 |[0m
+  [90m74 |[0m       [36mreturn[0m {
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: fs.readFile(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import traces:
+  App Route:
+    ./src/lib/services/pdf-fonts.ts
+    ./src/lib/services/pdf-revision.ts
+    ./src/lib/provider-signing.ts
+    ./src/app/api/signing/[token]/provider/start/route.ts
+
+  Server Component:
+    ./src/lib/services/pdf-fonts.ts
+    ./src/lib/services/pdf-finalize.ts
+    ./src/lib/signing.ts
+    ./src/app/sign/[token]/page.tsx
+
+
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /accessibility
+├ ƒ /api/account/closure-request
+├ ƒ /api/account/profile
+├ ƒ /api/admin/audit
+├ ƒ /api/admin/email
+├ ƒ /api/admin/logo
+├ ƒ /api/admin/part11
+├ ƒ /api/admin/people
+├ ƒ /api/admin/people/[id]
+├ ƒ /api/admin/people/[id]/part11
+├ ƒ /api/admin/settings
+├ ƒ /api/admin/signer-data
+├ ƒ /api/admin/updates
+├ ƒ /api/auth/[...all]
+├ ƒ /api/brand/logo
+├ ƒ /api/contact
+├ ƒ /api/download/[token]
+├ ƒ /api/download/[token]/renew
+├ ƒ /api/envelopes
+├ ƒ /api/envelopes/[id]
+├ ƒ /api/envelopes/[id]/audit
+├ ƒ /api/envelopes/[id]/deadline
+├ ƒ /api/envelopes/[id]/document
+├ ƒ /api/envelopes/[id]/download
+├ ƒ /api/envelopes/[id]/fields
+├ ƒ /api/envelopes/[id]/nudge
+├ ƒ /api/envelopes/[id]/reminders
+├ ƒ /api/envelopes/[id]/send
+├ ƒ /api/envelopes/[id]/signers
+├ ƒ /api/envelopes/[id]/template
+├ ƒ /api/envelopes/[id]/thumbnail
+├ ƒ /api/envelopes/[id]/void
+├ ƒ /api/internal/retention
+├ ƒ /api/setup
+├ ƒ /api/signing/[token]
+├ ƒ /api/signing/[token]/consent
+├ ƒ /api/signing/[token]/decline
+├ ƒ /api/signing/[token]/document
+├ ƒ /api/signing/[token]/provider/start
+├ ƒ /api/signing/[token]/submit
+├ ƒ /api/signing/[token]/verify
+├ ƒ /api/signing/[token]/verify/email-code
+├ ƒ /api/signing/provider/return
+├ ƒ /api/templates/[id]
+├ ƒ /api/templates/[id]/bulk-send
+├ ƒ /api/templates/[id]/use
+├ ƒ /api/uploads
+├ ƒ /api/verify
+├ ƒ /contact
+├ ƒ /dashboard
+├ ƒ /download/[token]
+├ ƒ /electronic-signatures
+├ ƒ /envelopes/[id]
+├ ƒ /envelopes/[id]/prepare
+├ ƒ /envelopes/[id]/review
+├ ƒ /envelopes/[id]/signers
+├ ƒ /envelopes/new
+├ ○ /icon.svg
+├ ƒ /login
+├ ƒ /privacy
+├ ƒ /settings
+├ ƒ /setup
+├ ƒ /sign/[token]
+├ ƒ /sign/[token]/done
+├ ƒ /signer-privacy
+├ ƒ /signup
+├ ƒ /templates
+├ ƒ /templates/[id]/send-many
+├ ƒ /templates/[id]/use
+├ ƒ /terms
+└ ƒ /verify
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+EXIT:0
+
+================================================================================
+$ ffmpeg -y -i page.webm -an -c:v libx264 -pix_fmt yuv420p -r 30 -movflags +faststart -vf scale=1920:1080:flags=lanczos out.mp4
+EXIT:0
+$ ffmpeg -y -i out.mp4 -vf fps=10,scale=1280:-1:flags=lanczos,palettegen=max_colors=64:stats_mode=full palette.png
+EXIT:0
+$ ffmpeg -y -i out.mp4 -i palette.png -lavfi fps=10,scale=1280:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5 preview.gif
+EXIT:0
+preview.gif bytes: 3302512
+out.mp4 bytes: 1259971

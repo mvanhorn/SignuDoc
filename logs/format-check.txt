@@ -1,0 +1,24 @@
+$ npm run format:check
+
+> signudoc@0.2.1 format:check
+> prettier --check .
+
+Checking formatting...
+[warn] .tmp-demo-out/storage.json
+[warn] .tmp-record-bulk-send.mjs
+[warn] public/pdfjs/5.5.207/legacy/build/pdf.worker.min.mjs
+[warn] src/app/api/envelopes/[id]/document/route.ts
+[warn] src/app/api/envelopes/[id]/nudge/route.ts
+[warn] src/app/api/envelopes/[id]/route.ts
+[warn] src/components/auth/signup-shell.tsx
+[warn] src/components/contact/contact-form.tsx
+[warn] src/components/envelopes/interactive-placed-field.tsx
+[warn] src/components/envelopes/prepare-live-shell.tsx
+[warn] src/lib/account.ts
+[warn] src/lib/auth/route-session.ts
+[warn] src/lib/draft-pdf-cache.ts
+[warn] src/lib/pdfjs-client.ts
+[warn] src/lib/utils/pdf-coords.ts
+[warn] tsconfig.json
+[warn] Code style issues found in 16 files. Run Prettier with --write to fix.
+EXIT:1
